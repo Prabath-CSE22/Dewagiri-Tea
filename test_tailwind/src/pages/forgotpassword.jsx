@@ -1,10 +1,44 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 
 const forgotpassword = () => {
   return (
-    <div>
-      <h1>forgotpassword</h1>
-    </div>
+    <main className='bg-gray-100 h-screen font-serif'>
+      <body className='w-[90%] h-screen mx-auto bg-gray-200'>
+            <form className='w-[35%] mx-auto relative  top-1/2 transform -translate-y-1/2 bg-white text-center p-5 rounded-md shadow-lg shadow-blue-100'>
+              <div className='flex flex-col items-center justify-between px-4 py-6'>
+                <div className='flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full'>
+                  <i className='bx bx-mail-send text-3xl text-blue-600'></i>
+                </div>
+                <h1 className='text-2xl sm:text-3xl lg:text-4xl font-semibold text-gray-900'>
+                  Forgot Password?
+                </h1>
+                <p className='text-gray-400'>No worries, we'll send you reset instructions.</p>
+              </div>
+              <div className='flex flex-col w-full mx-auto p-2 content-center items-center -mb-5'>
+                <label htmlFor="email" className='text-[10px] self-start ml-2 font-semibold'>*Email</label>
+                <input type="text" name="" id="email" placeholder='Enter your email' className="p-2 m-2 border border-gray-400 rounded-md w-full"/>
+                <i className='bx bxl-gmail relative text-gray-400 left-[45%] top-1/2 transform -translate-y-9'></i>
+              </div>
+              <div className='flex flex-col w-full mx-auto p-2 content-center items-center -mt-5'>         
+                <button className="bg-blue-500 text-white p-2 m-2 rounded-md w-full mx-auto hover:bg-blue-600 active:bg-blue-700 active:scale-95 transform transition duration-150">
+                  Reset Password
+                </button>
+              </div>
+              <div className="mt-1 pt-6 border-t border-gray-200 text-center flex flex-col w-full mx-auto p-2 content-center items-center">
+            <p className="text-xs text-gray-400">
+              Don't have an account?{' '}
+              <Link to="/" className="text-blue-500"> Sign up </Link>
+            </p>
+
+            <p className="mt-4 text-xs text-gray-400">
+              Need help?{' '}
+              <Link to="/" className="text-blue-500"> Contact Support </Link>
+            </p>
+          </div>
+            </form>
+      </body>
+    </main>
   )
 }
 
