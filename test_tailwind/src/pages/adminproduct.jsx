@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import Adprocard from '../component/ui/adminproductcard'
 import AddItem from '../component/additem'
 import LogOut from '../component/ui/dropdown'
+import { UsersRound, PackagePlus } from 'lucide-react';
 
 const adminproduct = () => {
     const[showMenu, setShowMenu] = useState(false)
@@ -31,11 +32,11 @@ const adminproduct = () => {
                                     <Link to='/admin' className='text-xs sm:text-xl lg:text-xl font-semibold text-gray-900'> Dashboard </Link>
                             </li>
                             <li className='flex items-center gap-2 px-2 md:px-3 py-2 md:py-6'>
-                                    <i class='bx bx-user text-xs sm:text-xl lg:text-xl'></i>
+                                <UsersRound  class='bx bx-user text-xs sm:text-xl lg:text-xl'/>
                                     <Link to='/users' className='text-xs sm:text-xl lg:text-xl font-semibold text-gray-900'> Users </Link>
                             </li>
                             <li className='flex items-center gap-2 px-2 md:px-3 py-2 md:py-6'>
-                                    <i class='bx bx-add-to-queue text-xs sm:text-xl lg:text-xl'></i>
+                                    <PackagePlus  class='bx bx-add-to-queue text-xs sm:text-xl lg:text-xl'/>
                                     <a href='#additem' className='text-xs sm:text-xl lg:text-xl font-semibold text-gray-900'> Add Product </a>
                             </li>
                     </ul>

@@ -4,6 +4,7 @@ import { LineChart } from '@mui/x-charts'
 import { BarChart } from '@mui/x-charts'
 import { Link } from 'react-router-dom'
 import LogOut from '../component/ui/dropdown'
+import { UsersRound } from 'lucide-react';
 
 const admin = () => {
     const[showMenu, setShowMenu] = useState(false)
@@ -32,7 +33,7 @@ return (
                     
                     <ul className='flex flex-col md:flex-row gap-0 md:gap-2 md:mx-auto md:my-0 md:relative md:top-0 absolute top-10 md:-left-20 left-0 right-0'>
                             <li className='flex items-center gap-2 px-2 md:px-3 py-2 md:py-6'>
-                                    <i class='bx bx-user text-xs sm:text-xl lg:text-xl'></i>
+                                  <UsersRound  class='bx bx-user text-xs sm:text-xl lg:text-xl'/>
                                     <Link to='/users' className='text-xs sm:text-xl lg:text-xl font-semibold text-gray-900'> Users </Link>
                             </li>
                             <li className='flex items-center gap-2 px-2 md:px-3 py-2 md:py-6'>
@@ -54,6 +55,31 @@ return (
                     <StatCard title='Orders' value='100' change='3%' positive={false} />
                     <StatCard title='Revenue' value='100' change='3%' positive={true} />
                 </div>
+
+                <div className="bg-white rounded-xl shadow-sm w-[99%] m-auto mt-1">
+                  <div className="flex flex-col justify-center items-center mt-10 bg-white p-6 rounded-lg border border-gray-200 w-full m-auto">
+                    <h3 className="text-lg font-semibold">Recent Orders</h3>
+                  </div>
+                  <div className="overflow-x-auto w-full bg-white rounded-lg shadow-md mt-1 mb-4">
+                  <table className="min-w-full border-collapse border border-gray-200 text-center">
+                    <thead className="bg-gray-100">
+                      <tr>
+                        <th className="px-6 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider border-b">Order ID</th>
+                        <th className="px-6 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider border-b">Customer</th>
+                        <th className="px-6 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider border-b">Product</th>
+                        <th className="px-6 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider border-b">Amount</th>
+                        <th className="px-6 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider border-b">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200">
+                      <OrderRow id="#12345" customer="John Doe" product="Green Tea" amount="$29.99" status="Delivered" />
+                      <OrderRow id="#12346" customer="Jane Smith" product="Earl Grey" amount="$24.99" status="Processing" />
+                      <OrderRow id="#12347" customer="Mike Johnson" product="Chamomile" amount="$19.99" status="Pending" />
+                    </tbody>
+                  </table>
+                </div>
+                </div>
+
                 <div className="flex flex-col justify-center items-center mt-10 bg-white p-6 rounded-lg shadow-lg border border-gray-200 w-[99%] m-auto">
                     <h1 className="text-2xl font-bold text-gray-800 mb-2">Monthly Sales Performance Overview</h1>
                     <p className="text-sm text-gray-500 mb-6">Track sales data over the past months to identify trends and patterns.</p>
@@ -89,29 +115,7 @@ return (
                     </div>
                     
               
-            <div className="bg-white rounded-xl shadow-sm w-[99%] m-auto mt-1">
-              <div className="flex flex-col justify-center items-center mt-10 bg-white p-6 rounded-lg border border-gray-200 w-full m-auto">
-                <h3 className="text-lg font-semibold">Recent Orders</h3>
-              </div>
-              <div className="overflow-x-auto w-full bg-white rounded-lg shadow-md mt-1 mb-4">
-              <table className="min-w-full border-collapse border border-gray-200">
-                <thead className="bg-gray-100">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b">Order ID</th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b">Customer</th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b">Product</th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b">Amount</th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  <OrderRow id="#12345" customer="John Doe" product="Green Tea" amount="$29.99" status="Delivered" />
-                  <OrderRow id="#12346" customer="Jane Smith" product="Earl Grey" amount="$24.99" status="Processing" />
-                  <OrderRow id="#12347" customer="Mike Johnson" product="Chamomile" amount="$19.99" status="Pending" />
-                </tbody>
-              </table>
-            </div>
-            </div>
+            
             </body>
     </main>
 )

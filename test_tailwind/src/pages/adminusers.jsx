@@ -2,10 +2,22 @@ import React, {useState} from 'react'
 import { Link } from 'react-router-dom'
 import { Users, Search, Filter, MoreVertical, Mail, Phone } from 'lucide-react';
 import LogOut from '../component/ui/dropdown'
+import Actions from '../component/ui/actions'
 
 const adminusers = () => {
         const[clicked, setClicked] = useState(false);
+          const [selectedAction, setSelectedAction] = useState('');
+        
+          const handleSelectChange = (e) => {
+            setSelectedAction(e.target.value);
+            if (e.target.value === '1') {
+              console.log('Suspend action selected');
+            } else if (e.target.value === '2') {
+              console.log('Remove action selected');
+            }
+          };
   const[showMenu, setShowMenu] = useState(false)
+  const[actionClicked, setActionClicked] = useState(false)
   const [users] = useState([
         {
           id: 1,
@@ -81,19 +93,19 @@ const adminusers = () => {
         <div className="flex flex-col justify-center items-center mt-10 bg-white p-6 rounded-lg shadow-lg border border-gray-200 w-[99%] m-auto">
                 <h1 className="text-2xl font-bold mb-8 text-center">Users</h1>
                 <div className='overflow-x-auto w-full'>
-                        <table className="w-full table-auto text-center">
+                        <table className="w-full table-auto text-center items-center justify-center">
                         <thead className="bg-gray-50">
                                 <tr>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Contact</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Orders</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total Spent</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Last Order</th>
-                                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                                        <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">Customer</th>
+                                        <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">Contact</th>
+                                        <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">Orders</th>
+                                        <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">Total Spent</th>
+                                        <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">Status</th>
+                                        <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">Last Order</th>
+                                        <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">Actions</th>
                                 </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-200">
+                        <tbody className="divide-y divide-gray-200 ">
                                 {users.map((user) => (
                                 <tr key={user.id} className="hover:bg-gray-50">
                                 <td className="px-6 py-4 whitespace-nowrap">
@@ -133,9 +145,15 @@ const adminusers = () => {
                                 {user.lastOrder}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <button className="text-gray-400 hover:text-gray-500">
-                                        <MoreVertical className="w-5 h-5" />
-                                </button>
+                                <select
+                                value={selectedAction}
+                                onChange={handleSelectChange}
+                                className="block w-full text-center px-1 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                >
+                                <option value="">No action taken</option>
+                                <option value="1">Suspend</option>
+                                <option value="2">Remove</option>
+                                </select>
                                 </td>
                                 </tr>
                                 ))}
