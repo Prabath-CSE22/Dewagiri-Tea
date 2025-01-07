@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ChevronRight, Star, Clock, Leaf, User } from 'lucide-react';
+import Dropdown from '../component/ui/dropdown';
 
 const HomePage = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -37,13 +38,15 @@ const HomePage = () => {
               </div>
             </div>
             <div className="flex items-center space-x-4">
-              <User className="w-5 h-5 text-gray-500 hover:text-emerald-600 cursor-pointer" />
+              <User className="w-5 h-5 text-gray-500 hover:text-emerald-600 cursor-pointer" onClick={() =>{
+                setIsMenuOpen(!isMenuOpen);
+              }}/>
             </div>
 
           </div>
         </div>
       </nav>
-
+      {/* {isMenuOpen && <Dropdown msg={"login"} className="absolute top-10"/>} */}
       {/* Hero Section */}
       <div className="relative pt-16">
         <img 

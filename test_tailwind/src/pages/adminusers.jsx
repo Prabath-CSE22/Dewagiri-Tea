@@ -55,7 +55,7 @@ const adminusers = () => {
       ]);
   return (
     <main className="bg-gray-100 font-serif mt-5 h-screen">
-      <body className=' w-full md:w-[90%]  mx-auto bg-gray-200 mt-5 h-screen'>
+      <body className=' w-full  mx-auto bg-gray-200 mt-5 h-screen'>
       <nav className='bg-white w-[99%] shadow-lg flex items-center justify-between p-2 m-auto rounded-b-lg md:h-fit h-16'>
             <i class='bx bx-menu md:invisible p-4 text-3xl ' onClick={() => {
                     setShowMenu(!showMenu)
@@ -88,9 +88,9 @@ const adminusers = () => {
                             }}></i>
                     </div>
                 </nav>
-                {clicked && <LogOut />}
+                {clicked && <LogOut  msg={"logout"}/>}
 
-        <div className="flex flex-col justify-center items-center mt-10 bg-white p-6 rounded-lg shadow-lg border border-gray-200 w-[99%] m-auto">
+        <div className="flex flex-col justify-center items-center mt-1 bg-white p-6 rounded-lg shadow-lg border border-gray-200 w-[99%] m-auto">
                 <h1 className="text-2xl font-bold mb-8 text-center">Users</h1>
                 <div className='overflow-x-auto w-full'>
                         <table className="w-full table-auto text-center items-center justify-center">

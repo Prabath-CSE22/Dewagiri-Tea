@@ -44,7 +44,7 @@ const userorder = () => {
                             }}></i>
                     </div>
                 </nav>
-                {clicked && <LogOut />}
+                {clicked && <LogOut  msg={"logout"}/>}
                 
                 <div className="bg-white p-6 rounded-lg shadow-lg text-center w-[99%] m-auto mt-1">
                     <h1 className='text-2xl font-bold text-gray-800 items-center space-x-2 text-center'>My orders</h1>

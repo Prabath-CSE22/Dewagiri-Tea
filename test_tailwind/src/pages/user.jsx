@@ -42,6 +42,7 @@ const defaulthome = () => {
                             }}></i>
                     </div>
                 </nav>
+                {clicked && <LogOut  msg={"logout"}/>}
                 <div className="bg-white p-6 rounded-lg shadow-lg text-center w-[99%] m-auto mt-1">
                 <div className="flex flex-col items-center justify-center bg-green-200 py-6 rounded-md">
                   <h1 className="text-2xl font-bold text-gray-800 flex items-center space-x-2">
@@ -58,8 +59,6 @@ const defaulthome = () => {
                   </button>
                 </div>
               </div>  
-
-                {clicked && <LogOut />}
             <div id='products' className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg shadow-md w-[99%] m-auto mt-1">
                 <Userprocard />
                 <Userprocard />

@@ -30,7 +30,7 @@ const AddProduct = () => {
   };
 
   return (
-    <div className="w-[99%] m-auto mt-5">
+    <div className="w-[99%] m-auto mt-1">
       <div className="bg-gray-50 rounded-lg shadow-md p-8 h-full">
         <div className="max-w-full mx-auto h-full flex flex-col">
           <h2 className="text-2xl font-bold mb-8 text-center">Add New Product</h2>

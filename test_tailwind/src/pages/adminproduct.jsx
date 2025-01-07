@@ -10,7 +10,7 @@ const adminproduct = () => {
     const[clicked, setClicked] = useState(false)
   return (
     <main className="bg-gray-100 font-serif mt-5 h-screen scroll-smooth focus:scroll-auto">
-      <body className=' w-full md:w-[90%]  mx-auto bg-gray-200 mt-5 '>
+      <body className=' w-full  mx-auto bg-gray-200 mt-5 '>
       <nav className='bg-white w-[99%] shadow-lg flex items-center justify-between p-2 m-auto rounded-b-lg md:h-fit h-16'>
             <i class='bx bx-menu md:invisible p-4 text-3xl ' onClick={() => {
                     setShowMenu(!showMenu)
@@ -49,8 +49,8 @@ const adminproduct = () => {
                             }}></i>
                     </div>
                 </nav>
-                {clicked && <LogOut />}
-                <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg shadow-md w-[99%] m-auto mt-10">
+                {clicked && <LogOut  msg={"logout"}/>}
+                <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg shadow-md w-[99%] m-auto mt-1">
                 <Adprocard />
                 <Adprocard />
                 <Adprocard />

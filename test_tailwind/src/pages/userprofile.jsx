@@ -79,7 +79,7 @@ const userprofile = () => {
                             }}></i>
                     </div>
                 </nav>
-                {clicked && <LogOut />}
+                {clicked && <LogOut  msg={"logout"}/>}
             <div className="flex flex-col items-center justify-center bg-gray-200">
                 <div className="w-[99%] m-auto my-1 ">
                         <div className="bg-gray-50 rounded-lg shadow-md p-8 h-full">

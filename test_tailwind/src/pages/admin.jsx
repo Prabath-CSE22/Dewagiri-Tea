@@ -15,7 +15,7 @@ const admin = () => {
     const[clicked, setClicked] = useState(false)
 return (
     <main className="bg-gray-100 font-serif mt-5">
-            <body className=' w-full md:w-[90%]  mx-auto bg-gray-200 mt-5'>
+            <body className=' w-full  mx-auto bg-gray-200 mt-5'>
             <nav className='bg-white w-[99%] shadow-lg flex items-center justify-between p-2 m-auto rounded-b-lg md:h-fit h-16'>
             <i class='bx bx-menu md:invisible p-4 text-3xl ' onClick={() => {
                     setShowMenu(!showMenu)
@@ -48,8 +48,8 @@ return (
                             }}></i>
                     </div>
                 </nav>
-                {clicked && <LogOut />}
-                <div className='flex flex-col md:flex-row gap-4 md:gap-4 justify-center items-center p-2 mt-10'>
+                {clicked && <LogOut  msg={"logout"}/>}
+                <div className='flex flex-col md:flex-row gap-4 md:gap-4 justify-center items-center p-2 mt-1'>
                     <StatCard title='Users' value='100' change='3%' positive={true}/>
                     <StatCard title='Products' value='100' change='3%' positive={true} />
                     <StatCard title='Orders' value='100' change='3%' positive={false} />
@@ -57,7 +57,7 @@ return (
                 </div>
 
                 <div className="bg-white rounded-xl shadow-sm w-[99%] m-auto mt-1">
-                  <div className="flex flex-col justify-center items-center mt-10 bg-white p-6 rounded-lg border border-gray-200 w-full m-auto">
+                  <div className="flex flex-col justify-center items-center mt-1 bg-white p-6 rounded-lg border border-gray-200 w-full m-auto">
                     <h3 className="text-lg font-semibold">Recent Orders</h3>
                   </div>
                   <div className="overflow-x-auto w-full bg-white rounded-lg shadow-md mt-1 mb-4">
@@ -80,7 +80,7 @@ return (
                 </div>
                 </div>
 
-                <div className="flex flex-col justify-center items-center mt-10 bg-white p-6 rounded-lg shadow-lg border border-gray-200 w-[99%] m-auto">
+                <div className="flex flex-col justify-center items-center mt-1 bg-white p-6 rounded-lg shadow-lg border border-gray-200 w-[99%] m-auto">
                     <h1 className="text-2xl font-bold text-gray-800 mb-2">Monthly Sales Performance Overview</h1>
                     <p className="text-sm text-gray-500 mb-6">Track sales data over the past months to identify trends and patterns.</p>
 
@@ -96,7 +96,7 @@ return (
                     />
                 </div>
 
-                <div className="flex flex-col justify-center items-center mt-10 bg-white p-6 rounded-lg shadow-lg border border-gray-200 w-[99%] m-auto">
+                <div className="flex flex-col justify-center items-center mt-1 bg-white p-6 rounded-lg shadow-lg border border-gray-200 w-[99%] m-auto">
                     
                     <h1 className="text-2xl font-bold text-gray-800 mb-2">Popular Products Comparison</h1>
                     <p className="text-sm text-gray-500 mb-6">Analyze the performance of different product groups over time.</p>
