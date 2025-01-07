@@ -65,7 +65,7 @@ const userprofile = () => {
                     <ul className='flex flex-col md:flex-row gap-0 md:gap-2 md:mx-auto md:my-0 md:relative md:top-0 absolute top-10 md:-left-20 left-0 right-0'>
                             <li className='flex items-center gap-2 px-2 md:px-3 py-2 md:py-6'>
                               <ShoppingBag  class='bx bx-home text-xs sm:text-xl lg:text-xl'/>
-                                    <Link to='/home' className='text-xs sm:text-xl lg:text-xl font-semibold text-gray-900'> Show Now </Link>
+                                    <Link to='/home' className='text-xs sm:text-xl lg:text-xl font-semibold text-gray-900'> Shop Now </Link>
                             </li>
                             <li className='flex items-center gap-2 px-2 md:px-3 py-2 md:py-6'>
                                     <ArrowLeftRight class='bx bx-package text-xs sm:text-xl lg:text-xl' />

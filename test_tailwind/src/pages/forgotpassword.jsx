@@ -42,7 +42,7 @@ const forgotpassword = () => {
               <div className="mt-1 pt-6 border-t border-gray-200 text-center flex flex-col w-full mx-auto p-2 content-center items-center">
             <p className="text-xs text-gray-400">
               Don't have an account?{' '}
-              <Link to="/" className="text-green-500"> Sign up </Link>
+              <Link to="/register" className="text-green-500"> Sign up </Link>
             </p>
 
             <p className="mt-4 text-xs text-gray-400">

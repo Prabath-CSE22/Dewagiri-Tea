@@ -34,7 +34,7 @@ const userorder = () => {
                             </li>
                             <li className='flex items-center gap-2 px-2 md:px-3 py-2 md:py-6'>
                               <ShoppingBag  class='bx bx-home text-xs sm:text-xl lg:text-xl'/>
-                                    <Link to='/home' className='text-xs sm:text-xl lg:text-xl font-semibold text-gray-900'> Show Now </Link>
+                                    <Link to='/home' className='text-xs sm:text-xl lg:text-xl font-semibold text-gray-900'> Shop Now </Link>
                             </li> 
                     </ul>
                     </div>

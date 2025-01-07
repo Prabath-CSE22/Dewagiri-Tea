@@ -10,20 +10,21 @@ import Admin from './pages/admin'
 import AdminUsers from './pages/adminusers'
 import AdminProducts from './pages/adminproduct'
 import UserOrders from './pages/userorder'
-
+import Home from './pages/home'
 
 const App = () => {
   return (
     <div>
       <BrowserRouter>
         <Routes>
+          <Route path="/" element={<Home />} />
           <Route path="/reset" element={<Resetpw />} />
           <Route path="/home" element={<User />} />
           <Route path="/profile" element={<UserProfile />} />
           <Route path="/orders" element={<UserOrders />} />
           <Route path="/forgot" element={<Forgotpassword />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/" element={<Login />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/users" element={<AdminUsers />} />
           <Route path="/products" element={<AdminProducts />} />

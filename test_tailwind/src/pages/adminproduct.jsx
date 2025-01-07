@@ -37,7 +37,9 @@ const adminproduct = () => {
                             </li>
                             <li className='flex items-center gap-2 px-2 md:px-3 py-2 md:py-6'>
                                     <PackagePlus  class='bx bx-add-to-queue text-xs sm:text-xl lg:text-xl'/>
-                                    <a href='#additem' className='text-xs sm:text-xl lg:text-xl font-semibold text-gray-900'> Add Product </a>
+                                    <a className='text-xs sm:text-xl lg:text-xl font-semibold text-gray-900 hover:cursor-pointer' onClick={() => {
+                                        document.getElementById('additem').scrollIntoView({behavior: 'smooth'});
+                                    }}> Add Product </a>
                             </li>
                     </ul>
                     </div>

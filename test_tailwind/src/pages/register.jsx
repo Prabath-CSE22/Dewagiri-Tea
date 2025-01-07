@@ -91,7 +91,7 @@ const register = () => {
           </button>
         </div>
         <div className='flex flex-col w-full mx-auto p-2 content-center items-center'>
-          <p className="text-xs text-gray-400">Already have an account? <Link to='/' className="text-green-500">Sign in</Link></p>
+          <p className="text-xs text-gray-400">Already have an account? <Link to='/login' className="text-green-500">Sign in</Link></p>
         </div>
         </form>
         
