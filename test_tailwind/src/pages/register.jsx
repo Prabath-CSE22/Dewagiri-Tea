@@ -1,17 +1,23 @@
-import React from 'react'
+import React, {useState} from 'react'
 import { Link } from 'react-router-dom'
 
 const register = () => {
+  const [password, setPassword] = useState('')
+  const hasMinLength = password.length >= 8;
+  const hasUpperCase = /[A-Z]/.test(password);
+  const hasLowerCase = /[a-z]/.test(password);
+  const hasNumber = /[0-9]/.test(password);
+  const hasSpecialChar = /[!@#$%^&*]/.test(password);
   return (
     <main className="bg-gray-100 h-screen font-serif">
       <body className='w-[90%] h-screen mx-auto bg-gray-200'>
-        <form className="w-[35%] mx-auto relative  top-1/2 transform -translate-y-1/2 bg-white text-center p-5 rounded-md shadow-lg shadow-blue-100">
+      <form className="sm:w-[35%] md:w-[35%] mx-0 relative  top-1/2 transform -translate-y-1/2 bg-white text-center p-5 rounded-md shadow-lg shadow-green-100 sm:mx-auto">
         <div className='flex items-center justify-between px-4 py-6'>
           <h1 className='text-2xl sm:text-3xl lg:text-4xl font-semibold text-gray-900'>
             Create Account
           </h1>
-          <div className='flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full'>
-            <i className='bx bx-user-plus text-3xl text-blue-600'></i>
+          <div className='flex items-center justify-center w-12 h-12 bg-green-100 rounded-full'>
+            <i className='bx bx-user-plus text-3xl text-green-600'></i>
           </div>
         </div>
         <div className='flex flex-col w-full mx-auto p-2 content-center items-center -gap-0.5 -mb-5'>
@@ -41,15 +47,26 @@ const register = () => {
               id='password'
               placeholder="Password"
               className="p-2 m-2 border border-gray-400 rounded-md w-full"
+              onChange={(e) => setPassword(e.target.value)}
             />
               <i class='bx bx-lock-alt relative text-gray-400 left-[45%] top-1/2 transform -translate-y-9 z-1' ></i>
             </div>
-            <div className='flex w-full mx-auto content-center items-center'>
+            {password && (() => {
+                if (!hasMinLength) return <p className="text-[10px] md:text-xs  absolute text-red-500 mb-2 -mt-2 text-left mx-3 transition-all duration-300">Password must be at least 8 characters</p>;
+                if (!hasUpperCase) return <p className="text-[10px] text-xs absolute text-red-500 mb-2 -mt-2 text-left mx-3 transition-all duration-300">Password must contain at least one uppercase letter</p>;
+                if (!hasLowerCase) return <p className="text-[10px] text-xs absolute text-red-500 mb-2 -mt-2 text-left mx-3 transition-all duration-300">Password must contain at least one lowercase letter</p>;
+                if (!hasNumber) return <p className="text-[10px] text-xs absolute text-red-500 mb-2 -mt-2 text-left mx-3 transition-all duration-300">Password must contain at least one number</p>;
+                if (!hasSpecialChar) return <p className="text-[10px] text-xs absolute text-red-500 mb-2 -mt-2 text-left mx-3 transition-all duration-300">Password must contain at least one special character</p>;
+                if(hasMinLength && hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar) return <p className="text-[10px] text-xs absolute text-green-500 mb-2 -mt-2 text-left mx-3 transition-all duration-300">Password is secure</p>;
+                return null;
+            })()}
+
+            <div className='flex w-full mx-auto content-center items-center mt-2'>
               <input type="checkbox" id="checkbox" className='m-2'/>
-              <label htmlFor="checkbox" className='text-xs text-gray-700'>I agree to the <Link to="" className="text-blue-500">terms</Link> and <Link to="" className="text-blue-500">conditions</Link> </label>
+              <label htmlFor="checkbox" className='text-xs text-gray-700'>I agree to the <Link to="" className="text-green-500">terms</Link> and <Link to="" className="text-green-500">conditions</Link> </label>
             </div>
           <div className='flex flex-col w-full mx-auto p-2 content-center items-center -gap-0.5'>
-            <button className="bg-blue-500 text-white p-2 m-2 rounded-md w-full mx-auto hover:bg-blue-600 active:bg-blue-700 active:scale-95 transform transition duration-150">
+            <button className="bg-green-500 text-white p-2 m-2 rounded-md w-full mx-auto hover:bg-green-600 active:bg-green-700 active:scale-95 transform transition duration-150">
               Register
             </button>
           </div>
@@ -74,7 +91,7 @@ const register = () => {
           </button>
         </div>
         <div className='flex flex-col w-full mx-auto p-2 content-center items-center'>
-          <p className="text-xs text-gray-400">Already have an account? <Link to='/' className="text-blue-500">Sign in</Link></p>
+          <p className="text-xs text-gray-400">Already have an account? <Link to='/' className="text-green-500">Sign in</Link></p>
         </div>
         </form>
         
