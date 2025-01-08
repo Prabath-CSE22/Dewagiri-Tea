@@ -41,15 +41,15 @@ const AdminProductCard = ({
         </div>
         
         <div className="flex gap-2 mt-4 pt-4 border-t border-gray-200">
-          <button className="flex items-center px-3 py-2 text-sm border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+          <button className="flex items-center px-3 py-2 text-sm border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors active:scale-95">
             <Pencil className="w-4 h-4 mr-2" />
             Edit
           </button>
-          <button className="flex items-center px-3 py-2 text-sm border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-red-600 hover:border-red-200">
+          <button className="flex items-center px-3 py-2 text-sm border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors active:scale-95 text-red-600 hover:border-red-200">
             <Trash2 className="w-4 h-4 mr-2" />
             Delete
           </button>
-          <button className="flex items-center px-3 py-2 text-sm border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors ml-auto">
+          <button className="flex items-center px-3 py-2 text-sm border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors active:scale-95 ml-auto">
             <ExternalLink className="w-4 h-4 mr-2" />
             View
           </button>

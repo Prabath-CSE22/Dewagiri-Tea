@@ -51,7 +51,7 @@ const AddProduct = () => {
                       <button
                         type="button"
                         onClick={() => setImagePreview(null)}
-                        className="absolute top-2 right-2 p-1 bg-white rounded-full shadow-md hover:bg-gray-100"
+                        className="absolute top-2 active:scale-95 right-2 p-1 bg-white rounded-full shadow-md hover:bg-gray-100"
                       >
                         <X className="w-5 h-5" />
                       </button>
@@ -138,13 +138,13 @@ const AddProduct = () => {
               <div className="flex gap-4 mt-auto pt-6">
                 <button
                   type="submit"
-                  className="flex-1 bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
+                  className="flex-1 bg-green-600 transition-all active:scale-95 text-white px-6 py-2 rounded-lg hover:bg-green-700"
                 >
                   Add Product
                 </button>
                 <button
                   type="button"
-                  className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-white transition-colors"
+                  className="px-6 py-2 border active:scale-95 transition-all border-gray-300 rounded-lg hover:bg-white"
                   onClick={() => {
                     setFormData({
                       name: '',

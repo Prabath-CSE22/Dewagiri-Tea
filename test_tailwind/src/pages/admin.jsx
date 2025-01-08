@@ -15,8 +15,8 @@ const admin = () => {
     const[clicked, setClicked] = useState(false)
 return (
     <main className="bg-gray-100 font-serif mt-5">
-            <body className=' w-full  mx-auto bg-gray-200 mt-5'>
-            <nav className='bg-white w-[99%] shadow-lg flex items-center justify-between p-2 m-auto rounded-b-lg md:h-fit h-16'>
+            <body className=' w-full  mx-auto bg-gray-200 mt-5 '>
+            <nav className='bg-white w-[99%] shadow-lg flex items-center justify-between p-2 m-auto rounded-b-lg md:h-fit h-16 sticky top-0 z-30 -mt-5'>
             <i class='bx bx-menu md:invisible p-4 text-3xl ' onClick={() => {
                     setShowMenu(!showMenu)
             }}></i>
@@ -42,8 +42,8 @@ return (
                             </li> 
                     </ul>
                     </div>
-                    <div className='flex items-center gap-2 text-right justify-end md:mr-10 mr-3'>
-                            <i class='bx bx-user text-3xl' onClick={() => {
+                    <div className='flex items-center gap-2 text-right justify-end md:mr-10 mr-3 hover:cursor-pointer'>
+                            <i class='bx bx-user text-xl' onClick={() => {
                               setClicked(!clicked)
                             }}></i>
                     </div>

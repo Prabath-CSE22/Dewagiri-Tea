@@ -2,10 +2,11 @@ import React, {useState} from 'react'
 import Footer from '../component/ui/footer'
 import LogOut from '../component/ui/dropdown'
 import { ArrowLeftRight, ShoppingBag } from 'lucide-react';
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Upload, X } from 'lucide-react';
 
 const userprofile = () => {
+  const navigate = useNavigate()
 
   const[showMenu, setShowMenu] = useState(false);
   const[clicked, setClicked] = useState(false);
@@ -47,7 +48,7 @@ const userprofile = () => {
   return (
     <main className="bg-gray-100 font-serif mt-5">
         <body className="bg-gray-200 font-mono leading-normal tracking-normal">
-        <nav className='bg-white w-[99%] shadow-lg flex items-center justify-between p-2 m-auto rounded-b-lg md:h-fit h-16'>
+        <nav className='bg-white w-[99%] shadow-lg flex items-center justify-between p-2 m-auto rounded-b-lg md:h-fit h-16 sticky top-0 z-30 -mt-5'>
               <i class='bx bx-menu md:invisible p-4 text-3xl ' onClick={() => {
                       setShowMenu(!showMenu)
               }}></i>
@@ -57,7 +58,9 @@ const userprofile = () => {
                                     setShowMenu(!showMenu)
                             }}></i>
                     </div>
-                    <div className='flex items-center gap-2 text-left justify-start -ml-5'>
+                    <div className='flex items-center gap-2 text-left justify-start -ml-5 hover:cursor-pointer'  onClick={() => {
+                                navigate('/')
+                    }}>
                             <img src='./logo.png' alt='logo' className='w-10 h-10 md:visible invisible'/>
                             <h1 className='text-xl sm:text-xl lg:text-xl font-semibold text-gray-900 md:visible invisible'> DewTea </h1>
                     </div>
@@ -73,8 +76,8 @@ const userprofile = () => {
                             </li> 
                     </ul>
                     </div>
-                    <div className='flex items-center gap-2 text-right justify-end md:mr-10 mr-3'>
-                            <i class='bx bx-user text-3xl' onClick={() => {
+                    <div className='flex items-center gap-2 text-right justify-end md:mr-10 mr-3 hover:cursor-pointer'>
+                            <i class='bx bx-user text-xl' onClick={() => {
                               setClicked(!clicked)
                             }}></i>
                     </div>
@@ -102,7 +105,7 @@ const userprofile = () => {
                                               <button
                                                 type="button"
                                                 onClick={() => setImagePreview(null)}
-                                                className="absolute top-2 right-2 p-1 bg-white rounded-full shadow-md hover:bg-gray-100"
+                                                className="absolute top-2 active:scale-95 right-2 p-1 bg-white rounded-full shadow-md hover:bg-gray-100"
                                               >
                                                 <X className="w-5 h-5" />
                                               </button>
@@ -121,6 +124,7 @@ const userprofile = () => {
                                       </div>
                         
                                       <div className="space-y-4">
+                                        <div className="space-y-2">
                                         <lable className="block text-sm font-medium text-gray-700">User Details</lable>
                                         <div>
                                           <label className="block text-sm font-medium text-gray-700 mb-1">Full name</label>
@@ -159,16 +163,18 @@ const userprofile = () => {
                                         <div className="space-y-4">
                                         <button
                                           type="submit"
-                                          className="w-full flex-1 bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
+                                          className="w-full flex-1 active:scale-95  bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
                                         >
                                                 Update Profile
                                         </button>
                                         </div>
                                       </div>
+                                      </div>
                                     </div>
                         
                                     {/* Right Column */}
                                     <div className="space-y-6">
+                                    <div className="space-y-2">
                                     <lable className="block text-sm font-medium text-gray-700">Address</lable>
                                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div>
@@ -237,16 +243,17 @@ const userprofile = () => {
                                       <div className="space-y-4">
                                         <button
                                           type="submit"
-                                          className="flex-1 bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors w-full"
+                                          className="flex-1 active:scale-95 bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors w-full"
                                         >
                                           Add Address
                                         </button>
                                         
                                       </div>
-
+                                          </div>
                                       <div>
                                         
                                       <div className="space-y-4">
+                                      <div className="space-y-2">
                                       <label className="block text-sm font-medium text-gray-700 mb-1">Change Password</label>
                                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div>
@@ -268,14 +275,16 @@ const userprofile = () => {
                                         </div>
                                         <button
                                           type="submit"
-                                          className="flex-1 bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors w-full"
+                                          className="flex-1 active:scale-95 bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors w-full"
                                         >
                                           Change Password
                                         </button>
                                         
                                       </div>
                                       </div>
+                                      </div>
                                       <div className="space-y-4">
+                                      <div className="space-y-2">
                                         <lable className="block text-sm font-medium text-gray-700">Delete My Account</lable>
                                         <div>
                                           <label className="block text-sm font-medium text-gray-700 mb-1">Reason</label>
@@ -286,15 +295,20 @@ const userprofile = () => {
                                             required
                                           />
                                         </div>
+                                        <div className="flex items-center text-gray-600">
+                                          <input type="checkbox" name="" id="check" className='m-1' />
+                                          <label htmlFor='check' className="text-xs">I understand that this action is irreversible</label>
+                                        </div>
                                         
                                         <div className="space-y-4">
                                         <button
                                           type="submit"
-                                          className="w-full flex-1 bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-colors"
+                                          className="w-full active:scale-95 flex-1 bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-colors"
                                         >
                                                 Delete Account
                                         </button>
                                         </div>
+                                      </div>
                                       </div>
                                     </div>
                                   </form>

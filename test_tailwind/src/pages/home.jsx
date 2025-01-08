@@ -1,9 +1,14 @@
 import React, { useState } from 'react';
 import { ChevronRight, Star, Clock, Leaf, User } from 'lucide-react';
-import Dropdown from '../component/ui/dropdown';
+import Carousel from '../component/ui/carousel';
+import { useNavigate } from 'react-router-dom';
 
 const HomePage = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
+  const handleClick = () => {
+    scrollToSection('shop');
+  };
 
   const featuredTeas = [
     { name: "Royal Earl Grey", price: "$24.99", rating: 4.8, image: "https://www.jiomart.com/images/product/600x600/rvr73vsu9b/tea-sampler-pack-32-enveloped-tea-bags-assortment-of-8-fine-black-green-tea-flavors-product-images-orvr73vsu9b-p599892396-1-202303271804.jpg" },
@@ -26,11 +31,14 @@ const HomePage = () => {
   return (
     <div className="min-h-screen bg-amber-50">
       {/* Navigation */}
-      <nav className="bg-white shadow-lg fixed w-full z-10">
+      <nav className="bg-white shadow-lg w-full sticky top-0 z-10">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-8">
-              <h1 className="text-2xl font-bold text-emerald-800">DewTea</h1>
+              <div className='flex items-center gap-2 text-left justify-start -ml-5 hover:cursor-pointer'>
+                  <img src='./logo.png' alt='logo' className='w-10 h-10 md:visible invisible'/>
+                  <h1 className='text-xl sm:text-xl lg:text-2xl font-semibold text-gray-900 md:visible invisible'> DewTea </h1>
+                </div>
               <div className="hidden md:flex space-x-6">
                 <button onClick={() => scrollToSection('shop')} className="text-gray-600 hover:text-emerald-600">Shop</button>
                 <button onClick={() => scrollToSection('about')} className="text-gray-600 hover:text-emerald-600">About</button>
@@ -39,7 +47,7 @@ const HomePage = () => {
             </div>
             <div className="flex items-center space-x-4">
               <User className="w-5 h-5 text-gray-500 hover:text-emerald-600 cursor-pointer" onClick={() =>{
-                setIsMenuOpen(!isMenuOpen);
+                navigate('/home')
               }}/>
             </div>
 
@@ -48,25 +56,9 @@ const HomePage = () => {
       </nav>
       {/* {isMenuOpen && <Dropdown msg={"login"} className="absolute top-10"/>} */}
       {/* Hero Section */}
-      <div className="relative pt-16">
-        <img 
-          src="https://th.bing.com/th/id/R.81c33c71b1ddcebe11ffa2f3c90106f4?rik=iPk5aLe3VdsGDw&pid=ImgRaw&r=0" 
-          alt="Luxury Tea Collection" 
-          className="w-full h-96 object-cover"
-        />
-        <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center pt-16">
-          <div className="container mx-auto px-4">
-            <div className="max-w-xl text-white">
-              <h2 className="text-5xl font-bold mb-4">Discover the Art of Fine Tea</h2>
-              <p className="text-xl mb-8">Curated collection of premium teas from around the world</p>
-              <button onClick={() => scrollToSection('shop')} className="bg-emerald-600 text-white px-8 py-3 rounded-lg hover:bg-emerald-700 transition duration-300">
-                Shop Now
-              </button>
-            </div>
-          </div>
+        <div className='w-full h-96'>
+        <Carousel handleClick={handleClick}/>
         </div>
-      </div>
-
       {/* Featured Products */}
       <section id="shop" className="py-16 bg-white">
         <div className="container mx-auto px-4">
@@ -94,6 +86,27 @@ const HomePage = () => {
           </div>
         </div>
       </section>
+
+
+
+      {/* Call to Action */}
+      <section className="py-16 px-6">
+        <div className="flex flex-col items-center justify-center p-12 bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300 rounded-lg shadow-lg">
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-800 text-center mb-4">
+            🛍️ Available Products Just for You!
+          </h1>
+          <p className="text-lg text-gray-600 text-center max-w-lg mb-6">
+            Browse through our collection and find what you love. Don’t miss out!
+          </p>
+          <button
+            onClick={() => navigate('/home')}
+            className="px-6 py-3 text-white bg-green-600 rounded-lg shadow-md hover:bg-green-700 hover:-translate-y-1 transition-transform duration-300"
+          >
+            Show Now
+          </button>
+        </div>
+      </section>
+
 
       {/* Categories */}
       <section className="py-16 bg-emerald-50">

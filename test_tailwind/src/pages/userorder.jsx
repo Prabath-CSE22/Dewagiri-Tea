@@ -1,18 +1,19 @@
 import React, {useState} from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { ArrowLeftRight, ShoppingBag } from 'lucide-react';
 import LogOut from '../component/ui/dropdown'
 import Footer from '../component/ui/footer';
 
 
 const userorder = () => {
+        const navigate = useNavigate();
     const [showMenu, setShowMenu] = useState(false);
     const [clicked, setClicked] = useState(false);
   return (
     <div>
     <main className="bg-gray-100 font-serif mt-5">
         <body className="bg-gray-200 font-mono leading-normal tracking-normal">
-            <nav className='bg-white w-[99%] shadow-lg flex items-center justify-between p-2 m-auto rounded-b-lg md:h-fit h-16'>
+            <nav className='bg-white w-[99%] shadow-lg flex items-center justify-between p-2 m-auto rounded-b-lg md:h-fit h-16 sticky top-0 z-30 -mt-5'>
               <i class='bx bx-menu md:invisible p-4 text-3xl ' onClick={() => {
                       setShowMenu(!showMenu)
               }}></i>
@@ -22,7 +23,9 @@ const userorder = () => {
                                     setShowMenu(!showMenu)
                             }}></i>
                     </div>
-                    <div className='flex items-center gap-2 text-left justify-start -ml-5'>
+                    <div className='flex items-center gap-2 text-left justify-start -ml-5 hover:cursor-pointer'  onClick={() => {
+                                navigate('/')
+                    }}>
                             <img src='./logo.png' alt='logo' className='w-10 h-10 md:visible invisible'/>
                             <h1 className='text-xl sm:text-xl lg:text-xl font-semibold text-gray-900 md:visible invisible'> DewTea </h1>
                     </div>
@@ -38,8 +41,8 @@ const userorder = () => {
                             </li> 
                     </ul>
                     </div>
-                    <div className='flex items-center gap-2 text-right justify-end md:mr-10 mr-3'>
-                            <i class='bx bx-user text-3xl' onClick={() => {
+                    <div className='flex items-center gap-2 text-right justify-end md:mr-10 mr-3 hover:cursor-pointer'>
+                            <i class='bx bx-user text-xl' onClick={() => {
                               setClicked(!clicked)
                             }}></i>
                     </div>

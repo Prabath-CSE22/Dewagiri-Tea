@@ -41,11 +41,11 @@ const userprocard = ({
         </div>
         </div>
         <div className="flex gap-2 mt-4 pt-4 border-t border-gray-200 justify-between items-center">
-            <button className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+            <button className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors active:scale-95">
                 <ShoppingCart className="w-4 h-4" />
                 <span>Add to Cart</span>
             </button>
-            <button className="p-2 text-gray-500  transition-colors" onClick={() => setIsFav(!isFav)}>
+            <button className="p-2 text-gray-500  transition-colors active:scale-95" onClick={() => setIsFav(!isFav)}>
                 {isFav ? <i class='bx bx-heart text-3xl text-gray-500 hover:text-red-500' ></i> : <i class='bx bxs-heart text-3xl text-red-500 hover:text-red-400'></i>}
             </button>
         </div>
