@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ArrowLeftRight, ShoppingBag } from 'lucide-react';
 import LogOut from '../component/ui/dropdown'
@@ -9,10 +9,14 @@ const userorder = () => {
         const navigate = useNavigate();
     const [showMenu, setShowMenu] = useState(false);
     const [clicked, setClicked] = useState(false);
+    useEffect(() => {
+        document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
+      }, [])
   return (
     <div>
     <main className="bg-gray-100 font-serif mt-5">
         <body className="bg-gray-200 font-mono leading-normal tracking-normal">
+        <div id="products"></div>
             <nav className='bg-white w-[99%] shadow-lg flex items-center justify-between p-2 m-auto rounded-b-lg md:h-fit h-16 sticky top-0 z-30 -mt-5'>
               <i class='bx bx-menu md:invisible p-4 text-3xl ' onClick={() => {
                       setShowMenu(!showMenu)

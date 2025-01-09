@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import Footer from '../component/ui/footer'
 import Userprocard from '../component/ui/userprocard'
 import LogOut from '../component/ui/dropdown'
@@ -13,10 +13,14 @@ const defaulthome = () => {
   const[clicked, setClicked] = useState(false);
   const[showCart, setShowCart] = useState(false);
   const[isConfirm, setIsConfirm] = useState(false);
+  useEffect(() => {
+    document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
+  }, [])
   return (
-    <main className="bg-gray-100 font-serif mt-5">
+    <main className="bg-gray-100 font-sans mt-5">
         <body className="bg-gray-200 font-mono leading-normal tracking-normal">
-          <nav className='bg-white w-[99%] shadow-lg flex items-center justify-between p-2 m-auto rounded-b-lg md:h-fit h-16 sticky top-0 z-30 -mt-5'>
+          <div id="products"></div>
+          <nav  className='bg-white w-[99%] shadow-lg flex items-center justify-between p-2 m-auto rounded-b-lg md:h-fit h-16 sticky top-0 z-30 -mt-5'>
               <i class='bx bx-menu md:invisible p-4 text-3xl ' onClick={() => {
                       setShowMenu(!showMenu)
               }}></i>
@@ -59,10 +63,11 @@ const defaulthome = () => {
                     </div>
                     </div>
                 </nav>
+                <div></div>
                 {clicked && <LogOut  msg={"logout"}/>}
                 {showCart && <Cart isConfirm={isConfirm} setIsConfirm={setIsConfirm}/>}
                 <div
-                  id="products"
+                  
                   className="bg-white p-6 rounded-lg shadow-lg text-center w-[99%] m-auto mt-1"
                   onClick={() => {
                     setShowCart(false)

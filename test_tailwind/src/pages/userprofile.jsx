@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import Footer from '../component/ui/footer'
 import LogOut from '../component/ui/dropdown'
 import { ArrowLeftRight, ShoppingBag } from 'lucide-react';
@@ -6,15 +6,19 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Upload, X } from 'lucide-react';
 
 const userprofile = () => {
+  useEffect(() => {
+      document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
+    }, [])
   const navigate = useNavigate()
 
   const[showMenu, setShowMenu] = useState(false);
   const[clicked, setClicked] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
-    const [formData, setFormData] = useState({
+    const [userData, setUserData] = useState({
       name: '',
       email: '',
       phonenumber: '',
+      image:'',
     });
     const [address, setAddress] = useState({
         streetaddress1: '',
@@ -25,7 +29,11 @@ const userprofile = () => {
         zipcode: '',
         });
 
-
+    const formData = {...userData, ...address};
+    const [password, setPassword] = useState();
+    const [confirmPassword, setConfirmPassword] = useState();
+    const [isChecked, setisChecked] = useState(false);
+    const [reason, setReason] = useState('');
   
     const handleImageChange = (e) => {
       const file = e.target.files[0];
@@ -33,6 +41,7 @@ const userprofile = () => {
         const reader = new FileReader();
         reader.onloadend = () => {
           setImagePreview(reader.result);
+          setUserData({ ...userData, image: reader.result});
         };
         reader.readAsDataURL(file);
       }
@@ -40,14 +49,12 @@ const userprofile = () => {
   
     const handleSubmit = (e) => {
       e.preventDefault();
-      console.log('Form submitted:', formData);
-      console.log('Image:', imagePreview);
-      
     };
 
   return (
     <main className="bg-gray-100 font-serif mt-5">
         <body className="bg-gray-200 font-mono leading-normal tracking-normal">
+        <div id="products"></div>
         <nav className='bg-white w-[99%] shadow-lg flex items-center justify-between p-2 m-auto rounded-b-lg md:h-fit h-16 sticky top-0 z-30 -mt-5'>
               <i class='bx bx-menu md:invisible p-4 text-3xl ' onClick={() => {
                       setShowMenu(!showMenu)
@@ -95,16 +102,16 @@ const userprofile = () => {
                                       <div className="space-y-2">
                                         <label className="block text-sm font-medium text-gray-700">Profile Picture</label>
                                         <div className="relative">
-                                          {imagePreview ? (
+                                          {userData.image ? (
                                             <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-white">
                                               <img 
-                                                src={imagePreview} 
+                                                src={userData.image} 
                                                 alt="Preview" 
                                                 className="w-full h-full object-cover"
                                               />
                                               <button
                                                 type="button"
-                                                onClick={() => setImagePreview(null)}
+                                                onClick={() => setUserData({ ...userData, image: '' })}
                                                 className="absolute top-2 active:scale-95 right-2 p-1 bg-white rounded-full shadow-md hover:bg-gray-100"
                                               >
                                                 <X className="w-5 h-5" />
@@ -131,8 +138,8 @@ const userprofile = () => {
                                           <input
                                             type="text"
                                             className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                                            value={formData.name}
-                                            onChange={(e) => setFormData({...formData, name: e.target.value})}
+                                            value={userData.name}
+                                            onChange={(e) => setUserData({...userData, name: e.target.value})}
                                             required
                                           />
                                         </div>
@@ -142,8 +149,8 @@ const userprofile = () => {
                                           <input
                                             type="email"
                                             className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                                            value={formData.email}
-                                            onChange={(e) => setFormData({...formData, email: e.target.value})}
+                                            value={userData.email}
+                                            onChange={(e) => setUserData({...userData, email: e.target.value})}
                                             required
                                           />
                                         </div>
@@ -154,16 +161,19 @@ const userprofile = () => {
                                             min="0"
                                             step="0.01"
                                             className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                                            value={formData.phonenumber}
-                                            onChange={(e) => setFormData({...formData, phonenumber: e.target.value})}
+                                            value={userData.phonenumber}
+                                            onChange={(e) => setUserData({...userData, phonenumber: e.target.value})}
                                             required
                                           />
                                         </div>
                                         </div>
                                         <div className="space-y-4">
                                         <button
-                                          type="submit"
-                                          className="w-full flex-1 active:scale-95  bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
+                                          className="w-full flex-1 active:scale-95  bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:active:scale-100"
+                                        onClick={() => {
+                                          console.log(formData)
+                                        }}
+                                        disabled={!userData.name || !userData.email || !userData.phonenumber}
                                         >
                                                 Update Profile
                                         </button>
@@ -183,7 +193,7 @@ const userprofile = () => {
                                             type="text"
                                             className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                                             value={address.streetaddress1}
-                                            onChange={(e) => setFormData({...address, streetaddress1: e.target.value})}
+                                            onChange={(e) => setAddress({...address, streetaddress1: e.target.value})}
                                             required
                                           />
                                         </div>
@@ -193,7 +203,7 @@ const userprofile = () => {
                                             type="text"
                                             className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                                             value={address.streetaddress2}
-                                            onChange={(e) => setFormData({ ...address, streetaddress2: e.target.value})}
+                                            onChange={(e) => setAddress({ ...address, streetaddress2: e.target.value})}
                                             
                                           />
                                         </div>
@@ -203,7 +213,7 @@ const userprofile = () => {
                                             type="text"
                                             className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                                             value={address.city}
-                                            onChange={(e) => setFormData({...address, city: e.target.value})}
+                                            onChange={(e) => setAddress({...address, city: e.target.value})}
                                             required
                                           />
                                         </div>
@@ -213,7 +223,7 @@ const userprofile = () => {
                                             type="text"
                                             className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                                             value={address.state}
-                                            onChange={(e) => setFormData({...address, state: e.target.value})}
+                                            onChange={(e) => setAddress({...address, state: e.target.value})}
                                             required
                                           />
                                         </div>
@@ -223,7 +233,7 @@ const userprofile = () => {
                                             type="text"
                                             className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                                             value={address.country}
-                                            onChange={(e) => setFormData({...address, country: e.target.value})}
+                                            onChange={(e) => setAddress({...address, country: e.target.value})}
                                             required
                                           />
                                         </div>
@@ -234,7 +244,7 @@ const userprofile = () => {
                                             min="0"
                                             className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                                             value={address.zipcode}
-                                            onChange={(e) => setFormData({...address, zipcode: e.target.value})}
+                                            onChange={(e) => setAddress({...address, zipcode: e.target.value})}
                                           />
                                         </div>
                                         
@@ -242,8 +252,8 @@ const userprofile = () => {
                         
                                       <div className="space-y-4">
                                         <button
-                                          type="submit"
-                                          className="flex-1 active:scale-95 bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors w-full"
+                                          className="flex-1 active:scale-95 bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors w-full disabled:opacity-50 disabled:active:scale-100"
+                                          disabled = {!address.streetaddress1 || !address.city || !address.state || !address.country || !address.zipcode}
                                         >
                                           Add Address
                                         </button>
@@ -261,7 +271,7 @@ const userprofile = () => {
                                           <input
                                             type="password"
                                             className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                                            
+                                            onChange={(e) => setPassword(e.target.value)}
                                             required
                                           />
                                         </div>
@@ -270,12 +280,14 @@ const userprofile = () => {
                                           <input
                                             type="password"
                                             className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                                            onChange={(e) => setConfirmPassword(e.target.value)}
+                                            required
                                           />
                                         </div>
                                         </div>
                                         <button
-                                          type="submit"
-                                          className="flex-1 active:scale-95 bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors w-full"
+                                          className="flex-1 active:scale-95 bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors w-full disabled:opacity-50 disabled:active:scale-100"
+                                          disabled = {!password || !confirmPassword || password !== confirmPassword}
                                         >
                                           Change Password
                                         </button>
@@ -291,19 +303,25 @@ const userprofile = () => {
                                           <input
                                             type="text"
                                             className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                                        
+                                            onChange={(e) => {
+                                              setReason(e.target.value);
+                                            }}
                                             required
                                           />
                                         </div>
                                         <div className="flex items-center text-gray-600">
-                                          <input type="checkbox" name="" id="check" className='m-1' />
+                                          <input type="checkbox" name="" id="check" className='m-1' disabled={!reason}
+                                           onChange={(e) => {
+                                            setisChecked(e.target.checked);
+                                            console.log(e.target.checked);
+                                          }}/>
                                           <label htmlFor='check' className="text-xs">I understand that this action is irreversible</label>
                                         </div>
                                         
                                         <div className="space-y-4">
                                         <button
-                                          type="submit"
-                                          className="w-full active:scale-95 flex-1 bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-colors"
+                                          className="w-full active:scale-95 flex-1 bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-colors  disabled:opacity-50 disabled:active:scale-100"
+                                          disabled = {!isChecked || !reason}
                                         >
                                                 Delete Account
                                         </button>

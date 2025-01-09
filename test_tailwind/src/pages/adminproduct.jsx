@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import { Link } from 'react-router-dom'
 import Adprocard from '../component/ui/adminproductcard'
 import AddItem from '../component/additem'
@@ -8,9 +8,13 @@ import { UsersRound, PackagePlus } from 'lucide-react';
 const adminproduct = () => {
     const[showMenu, setShowMenu] = useState(false)
     const[clicked, setClicked] = useState(false)
+    useEffect(() => {
+        document.getElementById('top').scrollIntoView({ behavior: 'smooth' });
+        }, [])
   return (
     <main className="bg-gray-100 font-serif mt-5 h-screen scroll-smooth focus:scroll-auto">
       <body className=' w-full  mx-auto bg-gray-200 mt-5 '>
+        <div id="top"></div>
       <nav className='bg-white w-[99%] shadow-lg flex items-center justify-between p-2 m-auto rounded-b-lg md:h-fit h-16 sticky top-0 z-30 -mt-5'>
             <i class='bx bx-menu md:invisible p-4 text-3xl ' onClick={() => {
                     setShowMenu(!showMenu)
@@ -58,7 +62,6 @@ const adminproduct = () => {
                 <Adprocard />
                 <Adprocard />
                 </div>
-
                 
                 <div id='additem'>
                 <AddItem />
