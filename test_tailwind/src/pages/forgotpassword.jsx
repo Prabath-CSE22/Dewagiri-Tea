@@ -1,11 +1,13 @@
 import React, {useState} from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import OTP from '../component/otp'
+import Reset from '../component/resetpw'
 const forgotpassword = () => {
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const[otp, setOtp] = useState('')
   const [clicked, setClicked] = useState(false);
+  const [otpReceived, setOtpReceived] = useState(false);
   return (
     <main className='bg-gray-100 h-screen font-serif'>
       {!clicked ? (
@@ -53,7 +55,13 @@ const forgotpassword = () => {
             </form>
       </body>
       ):(
-        <OTP OTP={otp}/>
+        <>
+        {!otpReceived ? (
+          <OTP OTP={otp} otpReceived={otpReceived} setOtpReceived={setOtpReceived}/>
+          ):(
+          <Reset />
+          )}
+        </>
       )
       }
     </main>

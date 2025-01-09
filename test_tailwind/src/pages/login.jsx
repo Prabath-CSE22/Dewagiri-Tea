@@ -1,7 +1,30 @@
-import React from 'react'
-import {Link} from 'react-router-dom'
+import React, {useState} from 'react'
+import {Link, useNavigate} from 'react-router-dom'
+import axios from 'axios'
+
 
 const login = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+      e.preventDefault();
+      if(email.length === 0 || password.length === 0){
+          alert('Please fill all fields');
+      }else{
+        // const response = await axios.post('http://localhost:3001/login', {email, password});
+        // if(response.status === 200){
+        //     console.log('Login successful:', response.data);
+        //     navigate('/home');
+        // }else{
+        //     alert('Invalid email or password');
+        // }
+        navigate('/home');
+      }
+  }
+  
+
   return (
     <main className="bg-gray-100 h-screen font-serif">
       <body className="w-[90%] h-screen mx-auto bg-gray-200">
@@ -9,14 +32,15 @@ const login = () => {
           <i class='bx bx-user text-8xl mx-auto relative top-1/2 transform translate-y-1/3 text-green-500'></i>
           <h1 className="font-semibold xl:text-4xl text-center pt-10 sm:text-2xl">Welcome Back</h1>
           <p className='text-xs text-gray-400 '>Please enter your login details</p>
-          <form className="flex flex-col justify-center items-center -mt-1" onSubmit={(e) => e.preventDefault()}>
+          <form className="flex flex-col justify-center items-center -mt-1" onSubmit={handleSubmit}>
             <div className='flex flex-col w-full mx-auto p-2 content-center items-center -mb-5'>
-              <label htmlFor="username" className='text-[10px] self-start ml-2 font-semibold'>*User name</label>
+              <label htmlFor="email" className='text-[10px] self-start ml-2 font-semibold'>*Email</label>
               <input
-                type="text"
-                id='username'
-                placeholder="Username | email"
+                type="email"
+                id='email'
+                placeholder="you@example.com"
                 className="p-2 m-2 border border-gray-400 rounded-md w-full"
+                onChange={(e) => setEmail(e.target.value)}
               />
               <i class='bx bx-user relative text-gray-400 left-[45%] top-1/2 transform -translate-y-9'></i>
             </div>
@@ -27,6 +51,7 @@ const login = () => {
                 id='password'
                 placeholder="Password"
                  className="p-2 m-2 border border-gray-400 rounded-md w-full"
+                  onChange={(e) => setPassword(e.target.value)}
               />
               <i class='bx bx-lock-alt relative text-gray-400 left-[45%] top-1/2 transform -translate-y-9' ></i>
             </div>

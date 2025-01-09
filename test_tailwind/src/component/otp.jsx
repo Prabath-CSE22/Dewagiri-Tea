@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const OTPInput = ({OTP}) => {
+const OTPInput = ({OTP, otpRecived, setOtpReceived}) => {
   const [otp, setOtp] = useState(['', '', '', '']);
   const inputRefs = [useRef(), useRef(), useRef(), useRef()];
   const [error, setError] = useState('');
@@ -56,7 +56,7 @@ const OTPInput = ({OTP}) => {
           disabled={otp.includes('')}
           onClick={() => {
             if (otp.join('') === OTP.toString()) {
-              navigate('/reset');
+              setOtpReceived(!otpRecived);
             } else {
               setError('Invalid OTP. Please try again.');
             }

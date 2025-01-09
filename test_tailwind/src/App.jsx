@@ -5,7 +5,6 @@ import UserProfile from './pages/userprofile'
 import Forgotpassword from './pages/forgotpassword'
 import Login from './pages/login'
 import Register from './pages/register'
-import Resetpw from './pages/resetpw'
 import Admin from './pages/admin'
 import AdminUsers from './pages/adminusers'
 import AdminProducts from './pages/adminproduct'
@@ -18,7 +17,6 @@ const App = () => {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/reset" element={<Resetpw />} />
           <Route path="/home" element={<User />} />
           <Route path="/profile" element={<UserProfile />} />
           <Route path="/orders" element={<UserOrders />} />

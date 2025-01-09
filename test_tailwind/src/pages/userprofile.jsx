@@ -4,21 +4,40 @@ import LogOut from '../component/ui/dropdown'
 import { ArrowLeftRight, ShoppingBag } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom'
 import { Upload, X } from 'lucide-react';
-
+import axios from 'axios';
 const userprofile = () => {
   useEffect(() => {
       document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
+      const getUserData = async () => {
+        try {
+          if(user_id) {
+            const data = await axios.post('http://localhost:3001/userdata', {user_id: user_id});
+            setUserData({
+              fullname: data.data.fullname,
+              email: data.data.email,
+              phone_number: data.data.phone_number,
+              profile_pic:data.data.profile_pic
+            });
+            if(data.data.address) {
+              setAddress(data.data.address);
+            }
+          }
+        } catch (error) {
+          console.error('Error in /userdata:', error);
+        }
+      }
+      getUserData();
     }, [])
   const navigate = useNavigate()
-
+  const user_id = 934633;
   const[showMenu, setShowMenu] = useState(false);
   const[clicked, setClicked] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
     const [userData, setUserData] = useState({
-      name: '',
+      fullname: '',
       email: '',
-      phonenumber: '',
-      image:'',
+      phone_number: '',
+      profile_pic:'',
     });
     const [address, setAddress] = useState({
         streetaddress1: '',
@@ -50,6 +69,7 @@ const userprofile = () => {
     const handleSubmit = (e) => {
       e.preventDefault();
     };
+
 
   return (
     <main className="bg-gray-100 font-serif mt-5">
@@ -161,7 +181,7 @@ const userprofile = () => {
                                             min="0"
                                             step="0.01"
                                             className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                                            value={userData.phonenumber}
+                                            value={userData.phone_number}
                                             onChange={(e) => setUserData({...userData, phonenumber: e.target.value})}
                                             required
                                           />

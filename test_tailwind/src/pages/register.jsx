@@ -1,17 +1,95 @@
-import React, {useState} from 'react'
-import { Link } from 'react-router-dom'
+import React, {useState, useEffect} from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import axios from 'axios'
 
 const register = () => {
+  const navigate = useNavigate()
+  const [usernames, setUsernames] = useState([]);
+  const [userIds, setUserIds] = useState([]);
   const [password, setPassword] = useState('')
   const hasMinLength = password.length >= 8;
   const hasUpperCase = /[A-Z]/.test(password);
   const hasLowerCase = /[a-z]/.test(password);
   const hasNumber = /[0-9]/.test(password);
   const hasSpecialChar = /[!@#$%^&*]/.test(password);
+  const [user, setUser] = useState({
+    user_id: '',
+    profile_pic: '',
+    fullname: '',
+    email: '',
+    phone_number: 12345678,
+    Address: {
+      street_line1: '',
+      street_line2: '',
+      city: '',
+      state: '',
+      country: '',
+      ZIP_Number: ''
+    },
+    user_name: '',
+    password: '',
+    role: 'user',
+    first_vist: true,
+    active: true,
+    status: 'active',
+    delete_request: ''
+  });
+  
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        // Fetch usernames
+        const response = await axios.get('http://localhost:3001/usernames');
+        setUsernames(response.data);
+  
+        // Fetch user IDs if usernames are loaded
+        if (response.data.length > 0) {
+          const respond = await axios.get('http://localhost:3001/user_ids');
+          setUserIds(respond.data);
+  
+          // Generate a unique user ID
+          let userId;
+          do {
+            userId = Math.floor(100000 + Math.random() * 900000).toString();
+          } while (respond.data.includes(userId));
+  
+          // Update the user state with the unique ID
+          setUser((prevUser) => ({ ...prevUser, user_id: userId }));
+          console.log('User ID generated:', userId);
+          
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+  
+    fetchUserData();
+  }, [user.user_name]);// Empty dependency array ensures this runs once on mount
+
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if(usernames.includes(user.user_name)){
+      alert('Username already exists');
+      document.getElementById('username').value = '';
+      return;
+    }
+    try{
+      const response = await axios.post('http://localhost:3001/register', user);
+      if(response.status === 200){
+        navigate('/login');
+        console.log('Registration successful:', response.data);
+      }
+    }
+    catch(error){
+      console.error('Error in register:', error);
+    }
+  }
+
   return (
     <main className="bg-gray-100 h-screen font-serif">
       <body className='w-[90%] h-screen mx-auto bg-gray-200'>
-      <form className="sm:w-[35%] md:w-[35%] mx-0 relative  top-1/2 transform -translate-y-1/2 bg-white text-center p-5 rounded-md shadow-lg shadow-green-100 sm:mx-auto">
+      <form className="sm:w-[35%] md:w-[35%] mx-0 relative  top-1/2 transform -translate-y-1/2 bg-white text-center p-5 rounded-md shadow-lg shadow-green-100 sm:mx-auto" onSubmit={handleSubmit}>
         <div className='flex items-center justify-between px-4 py-6'>
           <h1 className='text-2xl sm:text-3xl lg:text-4xl font-semibold text-gray-900'>
             Create Account
@@ -21,12 +99,13 @@ const register = () => {
           </div>
         </div>
         <div className='flex flex-col w-full mx-auto p-2 content-center items-center -gap-0.5 -mb-5'>
-            <label htmlFor="username" className='text-[10px] self-start ml-2 font-semibold'>*Full name</label>
+            <label htmlFor="username" className='text-[10px] self-start ml-2 font-semibold'>*Username</label>
             <input
               type="text"
               id='username'
-              placeholder="Prabath Samarasinghe"
+              placeholder="Username"
               className="p-2 m-2 border border-gray-400 rounded-md w-full"
+              onChange={(e) => setUser({...user, user_name: e.target.value})}
             />
             <i class='bx bx-user relative text-gray-400 left-[45%] top-1/2 transform -translate-y-9'></i>
           </div>
@@ -37,6 +116,7 @@ const register = () => {
               id='email'
               placeholder="you@example.com"
               className="p-2 m-2 border border-gray-400 rounded-md w-full"
+              onChange={(e) => setUser({...user, email: e.target.value})}
             />
           <i class='bx bxl-gmail relative text-gray-400 left-[45%] top-1/2 transform -translate-y-9' ></i>
           </div>
