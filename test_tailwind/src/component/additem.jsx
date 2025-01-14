@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Upload, X } from 'lucide-react';
+import axios from 'axios';
 
 const AddProduct = () => {
   const [imagePreview, setImagePreview] = useState(null);
@@ -22,10 +23,27 @@ const AddProduct = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    console.log('Image:', imagePreview);
+    try {
+      const response = await axios.post('http://localhost:3001/addproduct', {
+        ...formData,
+        image: imagePreview
+      });
+      console.log(response.data);
+      setFormData({
+        name: '',
+        category: '',
+        price: '',
+        stock: '',
+        status: 'In Stock'
+      });
+      setImagePreview(null);
+      
+    } catch (error) {
+      console.error(error);
+    }
+
     
   };
 

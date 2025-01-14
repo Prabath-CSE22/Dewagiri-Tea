@@ -7,22 +7,54 @@ const login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
-
   const handleSubmit = async (e) => {
-      e.preventDefault();
-      if(email.length === 0 || password.length === 0){
-          alert('Please fill all fields');
-      }else{
-        // const response = await axios.post('http://localhost:3001/login', {email, password});
-        // if(response.status === 200){
-        //     console.log('Login successful:', response.data);
-        //     navigate('/home');
-        // }else{
-        //     alert('Invalid email or password');
-        // }
-        navigate('/home');
-      }
-  }
+    e.preventDefault();
+    try {
+        if (email.length === 0 || password.length === 0) {
+            alert('Please fill all fields');
+            return;
+        }
+
+        const response = await axios.post(
+            'http://localhost:3001/login', 
+            { email, password },
+            { 
+                withCredentials: true,
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }
+        );
+
+        console.log('Response:', response);
+        
+        if (response.data.message === 'Login successful') {
+            console.log('Login successful:', response.data);
+            navigate('/home');
+        } else {
+            alert('Login failed');
+        }
+
+    } catch (error) {
+        console.error('Login error:', error);
+        if (error.response) {
+            // Server responded with error
+            if (error.response.status === 404) {
+                alert('User not found');
+            } else if (error.response.status === 401) {
+                alert('Invalid email or password');
+            } else {
+                alert('Login failed: ' + error.response.data.message);
+            }
+        } else if (error.request) {
+            // Request was made but no response
+            alert('No response from server. Please try again.');
+        } else {
+            // Something else went wrong
+            alert('Error: ' + error.message);
+        }
+    }
+}
   
 
   return (
@@ -51,7 +83,7 @@ const login = () => {
                 id='password'
                 placeholder="Password"
                  className="p-2 m-2 border border-gray-400 rounded-md w-full"
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => setPassword(e.target.value.toString())}
               />
               <i class='bx bx-lock-alt relative text-gray-400 left-[45%] top-1/2 transform -translate-y-9' ></i>
             </div>

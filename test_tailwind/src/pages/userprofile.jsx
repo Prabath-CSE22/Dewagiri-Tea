@@ -7,19 +7,25 @@ import { Upload, X } from 'lucide-react';
 import axios from 'axios';
 const userprofile = () => {
   useEffect(() => {
-      document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
-      const getUserData = async () => {
-        try {
-          if(user_id) {
-            const data = await axios.post('http://localhost:3001/userdata', {user_id: user_id});
-            setUserData({
-              fullname: data.data.fullname,
-              email: data.data.email,
-              phone_number: data.data.phone_number,
-              profile_pic:data.data.profile_pic
-            });
-            if(data.data.address) {
-              setAddress(data.data.address);
+    document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
+    const getUserData = async () => {
+      try {
+          const getAuth = await axios.get('http://localhost:3001/checkauth');
+          if(getAuth.data.message === "Valid token"){
+            console.log(getAuth.data.message);
+            
+            setUserId(getAuth.data.user.user_id);
+            if(getAuth.data.user.user_id) {
+              const responce = await axios.post('http://localhost:3001/getaddress', {user_id: getAuth.data.user.user_id});
+              setAddress(responce.data.Address[0]);
+            }
+          
+            if(getAuth.data.user.user_id) {
+              const data = await axios.post('http://localhost:3001/userdata', {user_id: getAuth.data.user.user_id});
+              setUser(data.data);
+              
+            }else{
+              console.log('User ID not found');
             }
           }
         } catch (error) {
@@ -28,39 +34,46 @@ const userprofile = () => {
       }
       getUserData();
     }, [])
-  const navigate = useNavigate()
-  const user_id = 934633;
+    const navigate = useNavigate()
+    const [user_id, setUserId] = useState();
   const[showMenu, setShowMenu] = useState(false);
   const[clicked, setClicked] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
-    const [userData, setUserData] = useState({
-      fullname: '',
-      email: '',
-      phone_number: '',
-      profile_pic:'',
-    });
-    const [address, setAddress] = useState({
-        streetaddress1: '',
-        streetaddress2: '',
-        city: '',
-        state: '',
-        country: '',
-        zipcode: '',
-        });
+  
+  const[user, setUser] = useState({
+    fullname:"",
+    email:'',
+    phone_number:'',
+    profile_pic:'',
+    first_vist: ''
+  });
 
-    const formData = {...userData, ...address};
-    const [password, setPassword] = useState();
-    const [confirmPassword, setConfirmPassword] = useState();
+  const [address, setAddress] = useState({
+    street_line1: '',
+    street_line2: '',
+    city: '',
+    state: '',
+    country: '',
+    ZIP_Number: '',
+  });
+    const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
     const [isChecked, setisChecked] = useState(false);
     const [reason, setReason] = useState('');
   
+    const hasMinLength = password.length >= 8;
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const hasSpecialChar = /[!@#$%^&*]/.test(password);
+
     const handleImageChange = (e) => {
       const file = e.target.files[0];
       if (file) {
         const reader = new FileReader();
         reader.onloadend = () => {
           setImagePreview(reader.result);
-          setUserData({ ...userData, image: reader.result});
+          setUser({ ...user, profile_pic: reader.result });
         };
         reader.readAsDataURL(file);
       }
@@ -69,7 +82,7 @@ const userprofile = () => {
     const handleSubmit = (e) => {
       e.preventDefault();
     };
-
+    
 
   return (
     <main className="bg-gray-100 font-serif mt-5">
@@ -122,16 +135,16 @@ const userprofile = () => {
                                       <div className="space-y-2">
                                         <label className="block text-sm font-medium text-gray-700">Profile Picture</label>
                                         <div className="relative">
-                                          {userData.image ? (
+                                          {user.profile_pic ? (
                                             <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-white">
                                               <img 
-                                                src={userData.image} 
+                                                src={user.profile_pic} 
                                                 alt="Preview" 
                                                 className="w-full h-full object-cover"
                                               />
                                               <button
                                                 type="button"
-                                                onClick={() => setUserData({ ...userData, image: '' })}
+                                                onClick={() => setUser({ ...user, profile_pic: '' })}
                                                 className="absolute top-2 active:scale-95 right-2 p-1 bg-white rounded-full shadow-md hover:bg-gray-100"
                                               >
                                                 <X className="w-5 h-5" />
@@ -158,8 +171,8 @@ const userprofile = () => {
                                           <input
                                             type="text"
                                             className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                                            value={userData.name}
-                                            onChange={(e) => setUserData({...userData, name: e.target.value})}
+                                            value={user.fullname}
+                                            onChange={(e) => setUser({...user, fullname: e.target.value})}
                                             required
                                           />
                                         </div>
@@ -169,8 +182,8 @@ const userprofile = () => {
                                           <input
                                             type="email"
                                             className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                                            value={userData.email}
-                                            onChange={(e) => setUserData({...userData, email: e.target.value})}
+                                            value={user.email}
+                                            onChange={(e) => setUser({...user, email: e.target.value})}
                                             required
                                           />
                                         </div>
@@ -181,8 +194,8 @@ const userprofile = () => {
                                             min="0"
                                             step="0.01"
                                             className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                                            value={userData.phone_number}
-                                            onChange={(e) => setUserData({...userData, phonenumber: e.target.value})}
+                                            value={user.phone_number}
+                                            onChange={(e) => setUser({...user, phone_number: e.target.value})}
                                             required
                                           />
                                         </div>
@@ -190,11 +203,23 @@ const userprofile = () => {
                                         <div className="space-y-4">
                                         <button
                                           className="w-full flex-1 active:scale-95  bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:active:scale-100"
-                                        onClick={() => {
-                                          console.log(formData)
-                                        }}
-                                        disabled={!userData.name || !userData.email || !userData.phonenumber}
-                                        >
+                                          onClick={async () => {                                    
+                                            try {
+                                              const respond = await axios.post('http://localhost:3001/updateuser', {
+                                                user_id, 
+                                                email: user.email,
+                                                fullname: user.fullname,
+                                                phone_number: user.phone_number,
+                                                first_vist: false,
+                                                profile_pic: user.profile_pic
+                                              });
+                                              console.log(respond.data);
+                                            } catch (error) {
+                                              console.log(error);
+                                            }
+                                          }}
+                                          disabled={!user.fullname || !user.email || !user.phone_number}
+                                          >
                                                 Update Profile
                                         </button>
                                         </div>
@@ -212,8 +237,8 @@ const userprofile = () => {
                                           <input
                                             type="text"
                                             className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                                            value={address.streetaddress1}
-                                            onChange={(e) => setAddress({...address, streetaddress1: e.target.value})}
+                                            value={address.street_line1}
+                                            onChange={(e) => setAddress({...address, street_line1: e.target.value})}
                                             required
                                           />
                                         </div>
@@ -222,8 +247,9 @@ const userprofile = () => {
                                           <input
                                             type="text"
                                             className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                                            value={address.streetaddress2}
-                                            onChange={(e) => setAddress({ ...address, streetaddress2: e.target.value})}
+                                            value={address.street_line2}
+                                            onChange={(e) => setAddress({...address, street_line2: e.target.value})}
+
                                             
                                           />
                                         </div>
@@ -263,8 +289,9 @@ const userprofile = () => {
                                             type="number"
                                             min="0"
                                             className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                                            value={address.zipcode}
-                                            onChange={(e) => setAddress({...address, zipcode: e.target.value})}
+                                            value={address.ZIP_Number}
+                                            onChange={(e) => 
+                                              setAddress({...address, ZIP_Number: e.target.value})}
                                           />
                                         </div>
                                         
@@ -273,7 +300,23 @@ const userprofile = () => {
                                       <div className="space-y-4">
                                         <button
                                           className="flex-1 active:scale-95 bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors w-full disabled:opacity-50 disabled:active:scale-100"
-                                          disabled = {!address.streetaddress1 || !address.city || !address.state || !address.country || !address.zipcode}
+                                          disabled = {!address.street_line1 || !address.city || !address.state || !address.country || !address.ZIP_Number}
+                                          onClick={async () =>{
+                                            try {
+                                              const respond = await axios.post('http://localhost:3001/updateaddress', {
+                                                user_id, 
+                                                street_line1: address.street_line1,
+                                                street_line2: address.street_line2,
+                                                city: address.city,
+                                                state: address.state,
+                                                country: address.country,
+                                                ZIP_Number: address.ZIP_Number
+                                              });
+                                              console.log(respond.data);
+                                            } catch (error) {
+                                              console.log(error);
+                                            }
+                                          }}
                                         >
                                           Add Address
                                         </button>
@@ -289,32 +332,58 @@ const userprofile = () => {
                                         <div>
                                           <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
                                           <input
+                                            id='password'
                                             type="password"
                                             className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                                             onChange={(e) => setPassword(e.target.value)}
-                                            required
                                           />
                                         </div>
                                         <div>
                                           <label className="block text-sm font-medium text-gray-700 mb-1">Re-enter Password</label>
                                           <input
+                                            id='confirmPassword'
                                             type="password"
                                             className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                                             onChange={(e) => setConfirmPassword(e.target.value)}
-                                            required
                                           />
                                         </div>
                                         </div>
+                                        
                                         <button
                                           className="flex-1 active:scale-95 bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors w-full disabled:opacity-50 disabled:active:scale-100"
                                           disabled = {!password || !confirmPassword || password !== confirmPassword}
+                                          onClick={async () =>{
+                                            try {
+                                              const respond = await axios.post('http://localhost:3001/changePassword', {
+                                                user_id, 
+                                                password: password
+                                              });
+                                              console.log(respond.data);
+                                            } catch (error) {
+                                              console.log(error);
+                                            }
+                                            document.getElementById('password').value = '';
+                                            document.getElementById('confirmPassword').value = '';
+                                          }}
                                         >
                                           Change Password
                                         </button>
                                         
                                       </div>
                                       </div>
+                                      {password && (() => {
+                                            if (!hasMinLength) return <p className="text-[10px] md:text-xs  absolute text-red-500 mb-2 mt-1 text-left mx-3 transition-all duration-300">Password must be at least 8 characters</p>;
+                                            if (!hasUpperCase) return <p className="text-[10px] text-xs absolute text-red-500 mb-2 mt-1 text-left mx-3 transition-all duration-300">Password must contain at least one uppercase letter</p>;
+                                            if (!hasLowerCase) return <p className="text-[10px] text-xs absolute text-red-500 mb-2 mt-1 text-left mx-3 transition-all duration-300">Password must contain at least one lowercase letter</p>;
+                                            if (!hasNumber) return <p className="text-[10px] text-xs absolute text-red-500 mb-2 mt-1 text-left mx-3 transition-all duration-300">Password must contain at least one number</p>;
+                                            if (!hasSpecialChar) return <p className="text-[10px] text-xs absolute text-red-500 mb-2 mt-1 text-left mx-3 transition-all duration-300">Password must contain at least one special character</p>;
+                                            if(hasMinLength && hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar && !confirmPassword) return <p className="text-[10px] text-xs absolute text-green-500 mb-2 mt-1 text-left mx-3 transition-all duration-300">Password is secure</p>;
+                                            if (password === confirmPassword) return <p className="text-[10px] text-xs absolute text-green-500 mb-2 mt-1 text-left mx-3 transition-all duration-300">Password Match</p>;
+                                            if (password !== confirmPassword) return <p className="text-[10px] text-xs absolute text-red-500 mb-2 mt-1 text-left mx-3 transition-all duration-300">Password do not match</p>;
+                                            return null;
+                                        })()}
                                       </div>
+                                      
                                       <div className="space-y-4">
                                       <div className="space-y-2">
                                         <lable className="block text-sm font-medium text-gray-700">Delete My Account</lable>
@@ -326,7 +395,7 @@ const userprofile = () => {
                                             onChange={(e) => {
                                               setReason(e.target.value);
                                             }}
-                                            required
+                                            
                                           />
                                         </div>
                                         <div className="flex items-center text-gray-600">

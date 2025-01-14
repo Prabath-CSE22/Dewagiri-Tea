@@ -4,20 +4,19 @@ import axios from 'axios'
 
 const register = () => {
   const navigate = useNavigate()
-  const [usernames, setUsernames] = useState([]);
-  const [userIds, setUserIds] = useState([]);
+  const [emails, setEmails] = useState([]);
   const [password, setPassword] = useState('')
+  const [email, setEmail] = useState('')
   const hasMinLength = password.length >= 8;
   const hasUpperCase = /[A-Z]/.test(password);
   const hasLowerCase = /[a-z]/.test(password);
   const hasNumber = /[0-9]/.test(password);
   const hasSpecialChar = /[!@#$%^&*]/.test(password);
   const [user, setUser] = useState({
-    user_id: '',
     profile_pic: '',
     fullname: '',
     email: '',
-    phone_number: 12345678,
+    phone_number: '',
     Address: {
       street_line1: '',
       street_line2: '',
@@ -39,43 +38,23 @@ const register = () => {
     const fetchUserData = async () => {
       try {
         // Fetch usernames
-        const response = await axios.get('http://localhost:3001/usernames');
-        setUsernames(response.data);
-  
-        // Fetch user IDs if usernames are loaded
-        if (response.data.length > 0) {
-          const respond = await axios.get('http://localhost:3001/user_ids');
-          setUserIds(respond.data);
-  
-          // Generate a unique user ID
-          let userId;
-          do {
-            userId = Math.floor(100000 + Math.random() * 900000).toString();
-          } while (respond.data.includes(userId));
-  
-          // Update the user state with the unique ID
-          setUser((prevUser) => ({ ...prevUser, user_id: userId }));
-          console.log('User ID generated:', userId);
-          
-        }
+        const response = await axios.get('http://localhost:3001/emails');
+        response.data.map((email) => setEmails((prevEmails) => [...prevEmails, email.email]));
+        console.log(emails.includes(email));
       } catch (error) {
         console.error('Error fetching user data:', error);
       }
     };
   
     fetchUserData();
-  }, [user.user_name]);// Empty dependency array ensures this runs once on mount
+  }, [email]);// Empty dependency array ensures this runs once on mount
 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if(usernames.includes(user.user_name)){
-      alert('Username already exists');
-      document.getElementById('username').value = '';
-      return;
-    }
     try{
-      const response = await axios.post('http://localhost:3001/register', user);
+      const FullData = {...user, password, email};
+      const response = await axios.post('http://localhost:3001/register', FullData);
       if(response.status === 200){
         navigate('/login');
         console.log('Registration successful:', response.data);
@@ -116,10 +95,14 @@ const register = () => {
               id='email'
               placeholder="you@example.com"
               className="p-2 m-2 border border-gray-400 rounded-md w-full"
-              onChange={(e) => setUser({...user, email: e.target.value})}
+              onChange={(e) => setEmail(e.target.value)}
             />
           <i class='bx bxl-gmail relative text-gray-400 left-[45%] top-1/2 transform -translate-y-9' ></i>
           </div>
+          {email && (() => {
+            if (emails.includes(email)) return <p className="text-[10px] text-xs absolute text-red-500 mb-2 -mt-2 text-left mx-3 transition-all duration-300">Email already exists</p>;
+            return null;
+          })()}
           <div className='flex flex-col w-full mx-auto p-2 content-center items-center -gap-0.5 -mb-5'>
             <label htmlFor="password" className='text-[10px] self-start ml-2 font-semibold'>*Password</label>
             <input
@@ -146,7 +129,8 @@ const register = () => {
               <label htmlFor="checkbox" className='text-xs text-gray-700'>I agree to the <Link to="" className="text-green-500">terms</Link> and <Link to="" className="text-green-500">conditions</Link> </label>
             </div>
           <div className='flex flex-col w-full mx-auto p-2 content-center items-center -gap-0.5'>
-            <button className="bg-green-500 text-white p-2 m-2 rounded-md w-full mx-auto hover:bg-green-600 active:bg-green-700 active:scale-95 transform transition duration-150">
+            <button className="bg-green-500 text-white p-2 m-2 rounded-md w-full mx-auto hover:bg-green-600 active:bg-green-700 active:scale-95 transform transition duration-150 disabled:opacity-50 disabled:active:scale-100"
+              disabled={emails.includes(email) || !hasMinLength || !hasUpperCase || !hasLowerCase || !hasNumber || !hasSpecialChar}>
               Register
             </button>
           </div>

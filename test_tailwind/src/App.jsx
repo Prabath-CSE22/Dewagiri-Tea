@@ -10,8 +10,10 @@ import AdminUsers from './pages/adminusers'
 import AdminProducts from './pages/adminproduct'
 import UserOrders from './pages/userorder'
 import Home from './pages/home'
+import axios from 'axios'
 
 const App = () => {
+  axios.defaults.withCredentials = true;
   return (
     <div>
       <BrowserRouter>

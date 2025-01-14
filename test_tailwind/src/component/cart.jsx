@@ -1,18 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import CartItem from './ui/cartItem';
-
+import axios from 'axios';
 const Cart = ({ id, isConfirm, setIsConfirm }) => {
   const [cart, setCart] = useState([]);
   const [total, setTotal] = useState(0);
   const [random, setRandom] = useState();
+  const [auth, setAuth] = useState([]);
 
   useEffect(() => {
     const fetchCartItems = async () => {
       setRandom(`INV-${new Date().getFullYear()}-${Math.floor(Math.random() * (1000 - 1) + 1)}`);
       try {
-        // Mock array for cart items until the API is implemented
-        const cartItems = { data: [] }; // Replace with your mock or API data
-        setCart(cartItems.data);
+        const getauth = await axios.get('http://localhost:3001/checkauth');
+        setAuth(getauth.data.user);
+        console.log(getauth.data.user);
+        if(getauth){
+          const response = await axios.post('http://localhost:3001/cart', { user_id: getauth.data.user.user_id });
+          setCart(response.data);
+          console.log(response.data);
+        }
       } catch (err) {
         console.error(err);
       }
@@ -21,7 +27,7 @@ const Cart = ({ id, isConfirm, setIsConfirm }) => {
   }, []);
 
   useEffect(() => {
-    const newTotal = cart.reduce((sum, item) => sum + item.total_price, 0);
+    const newTotal = cart.reduce((sum, item) => sum + item.price, 0);
     setTotal(newTotal);
   }, [cart]);
 
@@ -33,10 +39,11 @@ const Cart = ({ id, isConfirm, setIsConfirm }) => {
         {cart.map((item) => (
           <CartItem
             key={item._id}
-            id={item._id}
-            product_name={item.product_name}
+            id={item.product_id}
+            image={item.image}
+            product_name={item.name}
             quantity={item.quantity}
-            total={item.total_price}
+            total={item.price}
           />
         ))}
       </div>
@@ -49,8 +56,8 @@ const Cart = ({ id, isConfirm, setIsConfirm }) => {
       <button
         className="w-full py-2 mt-2 rounded-lg bg-green-500 text-lg font-bold transition-all hover:bg-green-600 text-white active:scale-95"
         onClick={async () => {
-          setCart([]);
-          console.log(random);
+          const responce = await axios.delete('http://localhost:3001/removecartitems', { user_id: auth.user_id });
+          console.log(responce.data);
           setIsConfirm(!isConfirm);
         }}
       >

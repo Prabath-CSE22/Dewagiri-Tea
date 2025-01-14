@@ -2,6 +2,7 @@ import React, {useState} from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import OTP from '../component/otp'
 import Reset from '../component/resetpw'
+import axios from 'axios'
 const forgotpassword = () => {
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
@@ -12,7 +13,16 @@ const forgotpassword = () => {
     <main className='bg-gray-100 h-screen font-serif'>
       {!clicked ? (
         <body className='w-[90%] h-screen mx-auto bg-gray-200'>
-        <form className="sm:w-[35%] md:w-[35%] mx-0 relative  top-1/2 transform -translate-y-1/2 bg-white text-center p-5 rounded-md shadow-lg shadow-green-100 sm:mx-auto" onSubmit={(e) => e.preventDefault()}>
+        <form className="sm:w-[35%] md:w-[35%] mx-0 relative  top-1/2 transform -translate-y-1/2 bg-white text-center p-5 rounded-md shadow-lg shadow-green-100 sm:mx-auto" onSubmit={async (e) => {
+          e.preventDefault();
+          if(email) {
+            setClicked(true);
+            const sendOTP = await axios.post('http://localhost:3001/sendemail', {email: email, otp: otp});
+            console.log(sendOTP.data);
+          }else{
+            alert('Please enter your email address');
+          }
+          }}>
             <div className='flex flex-col items-center justify-between px-4 py-6'>
                 <div className='flex items-center justify-center w-12 h-12 bg-green-100 rounded-full'>
                   <i className='bx bx-mail-send text-3xl text-green-600'></i>
@@ -32,12 +42,7 @@ const forgotpassword = () => {
               </div>
               <div className='flex flex-col w-full mx-auto p-2 content-center items-center -mt-5'>         
                 <button className="bg-green-500 text-white p-2 m-2 rounded-md w-full mx-auto hover:bg-green-600 active:bg-green-700 active:scale-95 transform transition duration-150" 
-                onClick={() => {
-                  if(email) {
-                    setClicked(true);
-                    console.log(`OTP sent to ${email} is ${otp}`);
-                  }
-                }}>
+                type="submit">
                   Send OTP <i className='bx bx-mail-send ml-1'></i>
                 </button>
               </div>

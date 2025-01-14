@@ -7,15 +7,32 @@ import { Link } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import Cart from '../component/cart'
 import OrderSum from '../component/ordersum';
+import axios from 'axios'
 const defaulthome = () => {
   const navigate = useNavigate()
   const[showMenu, setShowMenu] = useState(false);
   const[clicked, setClicked] = useState(false);
   const[showCart, setShowCart] = useState(false);
   const[isConfirm, setIsConfirm] = useState(false);
+  const[products, setProduts] = useState([]);
+  const[auth, setAuth] = useState([]);
   useEffect(() => {
     document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
-  }, [])
+
+    const fetchProduts = async () => {
+      try {
+        const response = await axios.get('http://localhost:3001/products');
+        setProduts(response.data);
+        if(response.data){
+          const getauth = await axios.get('http://localhost:3001/checkauth');
+          setAuth(getauth.data.user);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    fetchProduts();
+  }, []);
   return (
     <main className="bg-gray-100 font-sans mt-5">
         <body className="bg-gray-200 font-mono leading-normal tracking-normal">
@@ -102,12 +119,19 @@ const defaulthome = () => {
                 </div>
   
             <div  className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg shadow-md w-[99%] m-auto mt-1">
-                <Userprocard />
-                <Userprocard />
-                <Userprocard />
-                <Userprocard />
-                <Userprocard />
-                <Userprocard />
+                {products.map((product) => (
+                  <Userprocard 
+                    key={product.id}
+                    product_id={product.product_id}
+                    name={product.name}
+                    category={product.category}
+                    status={product.status}
+                    price={product.price}
+                    stock={product.stock}
+                    image={product.image}
+                    user_id={auth.user_id}
+                  />
+                ))}
                 </div>
                 <div className="bg-white p-6 rounded-lg shadow-lg text-center w-[99%] m-auto mt-1">
                   <div className="flex flex-col items-center justify-center bg-gray-200 py-6 rounded-md">

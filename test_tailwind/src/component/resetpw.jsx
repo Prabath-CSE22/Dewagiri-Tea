@@ -1,6 +1,7 @@
 import React, {useState} from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-const resetpw = () => {
+import axios from 'axios'
+const resetpw = ({user_id}) => {
     const navigate = useNavigate()
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
@@ -12,13 +13,10 @@ const resetpw = () => {
     const hasSpecialChar = /[!@#$%^&*]/.test(password);
     const passwordsMatch = password === confirmPassword && password !== '';
 
-    const handleSubmit = (e) => {
-        e.preventDefault()
-    }
   return (
     <main className="bg-gray-100 h-screen font-serif">
         <body className='w-[90%] h-screen mx-auto bg-gray-200'>
-            <form className="sm:w-[35%] md:w-[35%] mx-0 relative  top-1/2 transform -translate-y-1/2 bg-white text-center p-5 rounded-md shadow-lg shadow-green-100 sm:mx-auto" onSubmit={handleSubmit}>
+            <div className="sm:w-[35%] md:w-[35%] mx-0 relative  top-1/2 transform -translate-y-1/2 bg-white text-center p-5 rounded-md shadow-lg shadow-green-100 sm:mx-auto" >
             <div className='flex flex-col items-center justify-between px-4 py-6'>
                 <div className='flex items-center justify-center w-12 h-12 bg-green-100 rounded-full'>
                   <i className='bx bx-lock-alt text-3xl text-green-600'></i>
@@ -54,7 +52,7 @@ const resetpw = () => {
                 <label htmlFor="password" className='text-[10px] self-start ml-2 font-semibold'>*Password</label>
                 <input
                 type="password"
-                id='password'
+                id='c_password'
                 placeholder="Confirm new password"
                 className="p-2 m-2 border border-gray-400 rounded-md w-full"
                 onChange={(e) => setConfirmPassword(e.target.value)}
@@ -74,7 +72,11 @@ const resetpw = () => {
                 </div>
                 <div className='flex flex-col w-full mx-auto p-2 content-center items-center -gap-0.5'>
                 <button className="bg-green-500 text-white p-2 m-2 rounded-md w-full mx-auto hover:bg-green-600 active:bg-green-700 active:scale-95 transform transition duration-150"
-                disabled={!passwordsMatch || !hasMinLength || !hasUpperCase || !hasLowerCase || !hasNumber || !hasSpecialChar} onClick={() => {
+                disabled={!passwordsMatch || !hasMinLength || !hasUpperCase || !hasLowerCase || !hasNumber || !hasSpecialChar} onClick={async () => {
+                    if(passwordsMatch && hasMinLength && hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar) {
+                        const resetPassword = await axios.post('http://localhost:3001/changePassword', {user_id: user_id, password: confirmPassword});
+                        console.log(resetPassword.data);
+                    }
                     navigate('/login'); 
                 }}>
                 Reset Password
@@ -85,7 +87,7 @@ const resetpw = () => {
                     Need help?{' '}
                     <Link to="/" className="text-green-500"> Contact Support </Link>
                 </p>            </div>    
-            </form>           
+            </div>           
         </body>
     </main>
   )
