@@ -30,7 +30,7 @@ const Cart = ({ id, isConfirm, setIsConfirm }) => {
   }, [cart]);
 
   return (
-    <div className="flex flex-col justify-center items-center mt-5 gap-4 bg-white md:w-[25%] max-h-[65vh] w-[50%] rounded-lg p-4 shadow-lg absolute right-4 top-20">
+    <div className="flex flex-col justify-center items-center mt-5 gap-4 bg-white md:w-[25%] max-h-[65vh] w-[50%] rounded-lg p-4 shadow-lg fixed right-4 top-20">
       <h2 className="text-xl font-bold">Cart</h2>
 
       <div className="w-full overflow-y-auto">
@@ -52,12 +52,21 @@ const Cart = ({ id, isConfirm, setIsConfirm }) => {
       </div>
 
       <button
-        className="w-full py-2 mt-2 rounded-lg bg-green-500 text-lg font-bold transition-all hover:bg-green-600 text-white active:scale-95"
+        className="w-full py-2 mt-2 rounded-lg bg-green-500 text-lg font-bold transition-all hover:bg-green-600 text-white active:scale-95 disabled:bg-green-400 disabled:scale-100"
         onClick={async () => {
-          const emptyCart = await axios.delete(`http://localhost:3001/removecartitems/${auth.user_id}`);
-          console.log(emptyCart.data);
-          setIsConfirm(!isConfirm);
+          const purchase = await axios.post('http://localhost:3001/purchase', {
+            user_id: auth.user_id,
+            total: total,
+            invoice_num: random,
+          });
+          console.log(purchase.data);
+          if(purchase.status === 200){
+            const emptyCart = await axios.delete(`http://localhost:3001/removecartitems/${auth.user_id}`);
+            console.log(emptyCart.data);
+            setIsConfirm(!isConfirm);
+          }
         }}
+        disabled={cart.length === 0}
       >
         Purchase
       </button>

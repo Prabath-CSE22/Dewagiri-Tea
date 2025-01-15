@@ -10,6 +10,7 @@ import AdminUsers from './pages/adminusers'
 import AdminProducts from './pages/adminproduct'
 import UserOrders from './pages/userorder'
 import Home from './pages/home'
+import ProtectedRoutes from './component/ProtectedRoutes'
 import axios from 'axios'
 
 const App = () => {
@@ -19,15 +20,17 @@ const App = () => {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/home" element={<User />} />
-          <Route path="/profile" element={<UserProfile />} />
-          <Route path="/orders" element={<UserOrders />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/forgot" element={<Forgotpassword />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/admin" element={<Admin />} />
-          <Route path="/users" element={<AdminUsers />} />
-          <Route path="/products" element={<AdminProducts />} />
+          <Route element={<ProtectedRoutes />}>
+            <Route path="/home" element={<User />} />
+            <Route path="/profile" element={<UserProfile />} />
+            <Route path="/orders" element={<UserOrders />} />
+            <Route path="/admin" element={<Admin />} />
+            <Route path="/users" element={<AdminUsers />} />
+            <Route path="/products" element={<AdminProducts />} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </div>

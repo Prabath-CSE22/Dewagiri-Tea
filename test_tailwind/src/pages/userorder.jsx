@@ -1,15 +1,31 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, Fragment} from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ArrowLeftRight, ShoppingBag } from 'lucide-react';
 import LogOut from '../component/ui/dropdown'
 import Footer from '../component/ui/footer';
+import axios from 'axios';
 
 const userorder = () => {
         const navigate = useNavigate();
     const [showMenu, setShowMenu] = useState(false);
     const [clicked, setClicked] = useState(false);
+    const [auth, setAuth] = useState([]);
+    const [orders, setOrders] = useState([]);
     useEffect(() => {
         document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
+        const fetchData = async () => {
+        try {
+                const responce = await axios.get('http://localhost:3001/checkauth');
+                setAuth(responce.data.user);                
+                if(responce.data.user){
+                        const response2 = await axios.post('http://localhost:3001/orders', { user_id: responce.data.user.user_id });
+                        setOrders(response2.data);                        
+                }
+        } catch (error) {
+                console.error(error);                        
+        }
+        }
+        fetchData();
       }, [])
   return (
     <div>
@@ -65,63 +81,31 @@ const userorder = () => {
                                 <th className="px-6 py-4 font-semibold text-gray-700 border-l-2" rowSpan={2}>Status</th>
                         </tr>
                         <tr className="bg-gray-50 border-b border-gray-200">
-                                <th className="px-6 py-4 font-semibold text-gray-700">Product</th>
-                                <th className="px-6 py-4 font-semibold text-gray-700">Quantity</th>
+                                <th className="px-6 py-4 font-semibold text-gray-700 border-r-2 border-l-2">Product</th>
+                                <th className="px-6 py-4 font-semibold text-gray-700 border-r-2">Quantity</th>
                                 <th className="px-6 py-4 font-semibold text-gray-700">Price</th>
                         </tr>
                         </thead>
-                        <tbody className="bg-white">
-                        {/* Example of one row - repeat for others */}
-                        <tr className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                                <td className="px-6 py-4 text-gray-900">INV-0001</td>
-                                <td className="px-6 py-4 text-gray-900">12/12/2021</td>
-                                <td className="px-6 py-4 text-gray-900">Product 1</td>
-                                <td className="px-6 py-4 text-gray-900">2</td>
-                                <td className="px-6 py-4 text-gray-900">2000</td>
-                                <td className="px-6 py-4 font-medium text-gray-900">4000</td>
-                                <td className="px-6 py-4">
-                                <span className="px-3 py-1 text-sm font-medium text-green-700 bg-green-100 rounded-full">
-                                Delivered
-                                </span>
-                                </td>
-                        </tr>
-                        <tr className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                                <td className="px-6 py-4 text-gray-900">INV-0002</td>
-                                <td className="px-6 py-4 text-gray-900">12/12/2021</td>
-                                <td className="px-6 py-4 text-gray-900">Product 2</td>
-                                <td className="px-6 py-4 text-gray-900">1</td>
-                                <td className="px-6 py-4 text-gray-900">1000</td>
-                                <td className="px-6 py-4 font-medium text-gray-900">1000</td>
-                                <td className="px-6 py-4">
-                                <span className="px-3 py-1 text-sm font-medium text-green-700 bg-green-100 rounded-full">
-                                Delivered
-                                </span>
-                                </td>
-                        </tr>
-                        <tr className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                                <td className="px-6 py-4 text-gray-900" rowSpan={3}>INV-0004</td>
-                                <td className="px-6 py-4 text-gray-900" rowSpan={3}>01/02/2025</td>
-                                <td className="px-6 py-4 text-gray-900">Product X</td>
-                                <td className="px-6 py-4 text-gray-900">2</td>
-                                <td className="px-6 py-4 text-gray-900">1000</td>
-                                <td className="px-6 py-4 font-medium text-gray-900" rowSpan={3}>6000</td>
-                                <td className="px-6 py-4" rowSpan={3}>
-                                <span className="px-3 py-1 text-sm font-medium text-green-700 bg-green-100 rounded-full">
-                                Delivered
-                                </span>
-                                </td>
-                        </tr>
-                        <tr className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                                <td className="px-6 py-4 text-gray-900">Product Y</td>
-                                <td className="px-6 py-4 text-gray-900">1</td>
-                                <td className="px-6 py-4 text-gray-900">2000</td>
-                        </tr>
-                        <tr className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                                <td className="px-6 py-4 text-gray-900">Product Z</td>
-                                <td className="px-6 py-4 text-gray-900">2</td>
-                                <td className="px-6 py-4 text-gray-900">1500</td>
-                        </tr>
-                        {/* Add similar styling for other rows */}
+                        <tbody className="bg-white">                       
+                        {
+                                orders.map((order) => (
+                                       <Fragment key={order.invoice_num}>
+                                        {order.products.map((product, index) => (
+                                                <tr key={index} className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
+                                                        {index === 0 && <td className="px-6 py-4 border-r-2 text-gray-900" rowSpan={order.products.length}>{order.invoice_num}</td>}
+                                                        {index === 0 && <td className="px-6 py-4 border-r-2 text-gray-900" rowSpan={order.products.length}>{order.date}</td>}
+                                                        <td className="px-6 py-4 border-r-2 text-gray-500">{product.product_name}</td>
+                                                        <td className="px-6 py-4 border-r-2 text-gray-500">{product.quantity}</td>
+                                                        <td className="px-6 py-4 border-r-2 text-gray-500">{`$${order.total_price.toFixed(2)}`}</td>
+                                                        {index === 0 && <td className="px-6 py-4 border-r-2 font-medium text-gray-900" rowSpan={order.products.length}>{`$${order.total_price.toFixed(2)}`}</td>}
+                                                        {index === 0 && <td className={`px-6 py-4 border-r-2 ${order.status === "Pending" ? "text-blue-600":order.status === "Processing" ? "text-yellow-600":"text-green-600"}`} rowSpan={order.products.length}>
+                                                                <span className={`bg-gray-200 px-5 py-1 rounded-3xl ${order.status === "Pending" ? "bg-blue-200":order.status === "Processing" ? "bg-yellow-200":"bg-green-200"}`}>{order.status}</span>
+                                                                </td>}
+                                                </tr>
+                                        ))}
+                                       </Fragment>
+                                ))
+                        }
                         </tbody>
                         </table>
                         </div>

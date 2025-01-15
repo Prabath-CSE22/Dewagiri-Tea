@@ -91,6 +91,56 @@ const CartItems = mongoose.model('cartitems', new mongoose.Schema({
     image: String,
 }));
 
+const PurchasedItems = mongoose.model('purchaseditems', new mongoose.Schema({
+    user_id: String,
+    products: [{
+        product_name: String,
+        quantity: Number,
+        total_price: Number
+    }],
+    total_price: Number,
+    date: String,
+    invoice_num: String,
+    status: String
+}));
+
+app.post('/orders', async (req, res) => {
+    const { user_id } = req.body;
+    try {
+        const orders = await PurchasedItems.find({ user_id : user_id }).lean().sort({ _id: -1 });
+        res.status(200).send(orders);
+    } catch (error) {
+        console.error('Error in /orders:', error);
+        res.status(500).send('Internal server error');
+    }
+});
+
+app.post('/purchase', async (req, res) => {
+    const { user_id, invoice_num, total } = req.body;
+    try {
+        const items = await CartItems.find({user_id : user_id }).lean();
+        
+        const purchase = new PurchasedItems({
+            user_id : user_id,
+            products: items.map(item => ({
+                product_name: item.name,
+                quantity: item.quantity,
+                total_price: item.price
+            })),
+            total_price: total,
+            date: `${new Date().getDate()}/${new Date().getMonth()+1}/${new Date().getFullYear()}`,
+            invoice_num: invoice_num,
+            status: 'Pending'
+        });
+
+        await purchase.save();
+        res.status(200).send('Purchase successful');
+    } catch (err) {
+        console.error('Error:', err);
+        res.status(500).send({ error: "Error adding purchases", message: err.message });
+    }
+});
+
 app.delete('/removecartitems/:user_id', async (req, res) => {
     const { user_id } = req.params;
     try {
@@ -345,20 +395,21 @@ app.post('/login', async (req, res) => {
 });
 
 app.get('/checkauth', (req, res) => {
-    const token = req.cookies.DewTeatoken;
-    console.log("Token received");
-    
+    const token = req.cookies.DewTeatoken;    
     
     if (!token) {
         return res.status(401).json({ message: 'No token found' });
     }
-    
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
         res.json({ message: 'Valid token', user: decoded });
     } catch (error) {
         res.status(401).json({ message: 'Invalid token' });
     }
+});
+
+app.get('/logout', (req, res) => {
+    res.clearCookie('DewTeatoken').send('Cookie cleared').status(200);
 });
 
 app.post('/sendemail', async (req, res) => {
