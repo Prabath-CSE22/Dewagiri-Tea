@@ -101,8 +101,6 @@ const userprocard = ({
             onClick={async () => {
                 setpriqun();
                 
-                console.log(product_id);
-                
               }}
               disabled={quantity === 0 || nstock === 0}>
                 <ShoppingCart className="w-4 h-4" />

@@ -91,13 +91,12 @@ const CartItems = mongoose.model('cartitems', new mongoose.Schema({
     image: String,
 }));
 
-app.delete('/removecartitems', async (req, res) => {
-    const { user_id } = req.body;
+app.delete('/removecartitems/:user_id', async (req, res) => {
+    const { user_id } = req.params;
     try {
-        const responce = await CartItems.deleteMany({ user_id : user_id });
-        console.log(responce);
-        if (!responce) {
-            res.status(404).send('User not found');
+        const cartItems = await CartItems.deleteMany({ user_id: user_id });
+        if (!cartItems) {
+            res.status(404).send('Items not found');
             return;
         }
         res.status(200).send('Items removed from cart successfully');
