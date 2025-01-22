@@ -96,7 +96,7 @@ const userorder = () => {
                                                         {index === 0 && <td className="px-6 py-4 border-r-2 text-gray-900" rowSpan={order.products.length}>{order.date}</td>}
                                                         <td className="px-6 py-4 border-r-2 text-gray-500">{product.product_name}</td>
                                                         <td className="px-6 py-4 border-r-2 text-gray-500">{product.quantity}</td>
-                                                        <td className="px-6 py-4 border-r-2 text-gray-500">{`$${order.total_price.toFixed(2)}`}</td>
+                                                        <td className="px-6 py-4 border-r-2 text-gray-500">{`$${product.total_price.toFixed(2)}`}</td>
                                                         {index === 0 && <td className="px-6 py-4 border-r-2 font-medium text-gray-900" rowSpan={order.products.length}>{`$${order.total_price.toFixed(2)}`}</td>}
                                                         {index === 0 && <td className={`px-6 py-4 border-r-2 ${order.status === "Pending" ? "text-blue-600":order.status === "Processing" ? "text-yellow-600":"text-green-600"}`} rowSpan={order.products.length}>
                                                                 <span className={`bg-gray-200 px-5 py-1 rounded-3xl ${order.status === "Pending" ? "bg-blue-200":order.status === "Processing" ? "bg-yellow-200":"bg-green-200"}`}>{order.status}</span>

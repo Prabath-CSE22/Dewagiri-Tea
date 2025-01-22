@@ -1,20 +1,29 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, Fragment} from 'react'
 import StatCard from '../component/ui/statcard'
 import { LineChart } from '@mui/x-charts'
 import { BarChart } from '@mui/x-charts'
 import { Link } from 'react-router-dom'
 import LogOut from '../component/ui/dropdown'
 import { UsersRound } from 'lucide-react';
-
+import axios from 'axios'
 const admin = () => {
     const[showMenu, setShowMenu] = useState(false)
+    const [count, setCount] = useState(0);
     const [chartWidth, setChartWidth] = useState(window.innerWidth * 0.9);
+    const [orders, setOrders] = useState([]);
     window.addEventListener('resize', () => {
         setChartWidth(window.innerWidth * 0.9);
     });
     const[clicked, setClicked] = useState(false)
     useEffect(() => {
             document.getElementById('top').scrollIntoView({ behavior: 'smooth' });
+            const fetchData = async () => {
+              const response = await axios.get('http://localhost:3001/count');
+              setCount(response.data);
+              const responseOrders = await axios.get('http://localhost:3001/allorders');
+              setOrders(responseOrders.data);
+            }
+            fetchData();
           }, [])
 return (
     <main className="bg-gray-100 font-serif mt-5">
@@ -53,33 +62,59 @@ return (
                     </div>
                 </nav>
                 {clicked && <LogOut  msg={"logout"}/>}
-                <div className='flex flex-col md:flex-row gap-4 md:gap-4 justify-center items-center p-2 mt-1'>
-                    <StatCard title='Users' value='100' change='3%' positive={true}/>
-                    <StatCard title='Products' value='100' change='3%' positive={true} />
-                    <StatCard title='Orders' value='100' change='3%' positive={false} />
-                    <StatCard title='Revenue' value='100' change='3%' positive={true} />
+                <div className='flex flex-col md:flex-row gap-4 md:gap-4 justify-center items-center md:p-2 p-1/2 mt-1'>
+                    <StatCard title='Users' value={count.count} change='3%' positive={true}/>
+                    <StatCard title='Products' value={count.countProducts} change='3%' positive={true} />
+                    <StatCard title='Orders' value={count.countOrders} change='3%' positive={false} />
+                    <StatCard title='Revenue' value={`$${Number(count.revenue).toFixed(2)}`} change='3%' positive={true} />
                 </div>
 
                 <div className="bg-white rounded-xl shadow-sm w-[99%] m-auto mt-1">
-                  <div className="flex flex-col justify-center items-center mt-1 bg-white p-6 rounded-lg border border-gray-200 w-full m-auto">
+                  {/* <div className="flex flex-col justify-center items-center mt-1 bg-white p-6 rounded-lg border border-gray-200 w-full m-auto">
                     <h3 className="text-lg font-semibold">Recent Orders</h3>
-                  </div>
+                  </div> */}
                   <div className="overflow-x-auto w-full bg-white rounded-lg shadow-md mt-1 mb-4">
-                  <table className="min-w-full border-collapse border border-gray-200 text-center">
-                    <thead className="bg-gray-100">
-                      <tr>
-                        <th className="px-6 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider border-b">Order ID</th>
-                        <th className="px-6 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider border-b">Customer</th>
-                        <th className="px-6 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider border-b">Product</th>
-                        <th className="px-6 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider border-b">Amount</th>
-                        <th className="px-6 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider border-b">Status</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-200">
-                      <OrderRow id="#12345" customer="John Doe" product="Green Tea" amount="$29.99" status="Delivered" />
-                      <OrderRow id="#12346" customer="Jane Smith" product="Earl Grey" amount="$24.99" status="Processing" />
-                      <OrderRow id="#12347" customer="Mike Johnson" product="Chamomile" amount="$19.99" status="Pending" />
-                    </tbody>
+                  <table className="w-full table-auto whitespace-nowrap text-center">
+                  <thead>
+                    <tr className='bg-slate-300 border-b border-gray-200'>
+                    <th className="text-lg font-semibold h-16" colSpan={8}>Recent Orders</th>
+                    </tr>
+                  <tr className="bg-gray-100 border-b border-gray-200">
+                          <th className="px-6 py-4 font-semibold text-gray-700 " rowSpan={2}>Invoice</th>
+                          <th className="px-6 py-4 font-semibold text-gray-700 border-l-2" rowSpan={2}>Customer ID</th>
+                          <th className="px-6 py-4 font-semibold text-gray-700 border-l-2" rowSpan={2}>Date</th>
+                          <th className="px-6 py-4 font-semibold text-gray-700 border-l-2" colSpan={3}>Product</th>
+                          <th className="px-6 py-4 font-semibold text-gray-700 border-l-2" rowSpan={2}>Total Amount</th>
+                          <th className="px-6 py-4 font-semibold text-gray-700 border-l-2" rowSpan={2}>Status</th>
+                  </tr>
+                  <tr className="bg-gray-50 border-b border-gray-200">
+                          <th className="px-6 py-4 font-semibold text-gray-700 border-r-2 border-l-2">Product</th>
+                          <th className="px-6 py-4 font-semibold text-gray-700 border-r-2">Quantity</th>
+                          <th className="px-6 py-4 font-semibold text-gray-700">Price</th>
+                  </tr>
+                  </thead>
+                  <tbody className="bg-white">                       
+                  {
+                      orders.map((order) => (
+                        <Fragment key={order.invoice_num}>
+                        {order.products.map((product, index) => (
+                          <tr key={index} className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
+                            {index === 0 && <td className="px-6 py-4 border-r-2 text-gray-900" rowSpan={order.products.length}>{order.invoice_num}</td>}
+                            {index === 0 && <td className="px-6 py-4 border-r-2 text-gray-900" rowSpan={order.products.length}>{order.user_id}</td>}
+                            {index === 0 && <td className="px-6 py-4 border-r-2 text-gray-900" rowSpan={order.products.length}>{order.date}</td>}
+                            <td className="px-6 py-4 border-r-2 text-gray-500">{product.product_name}</td>
+                            <td className="px-6 py-4 border-r-2 text-gray-500">{product.quantity}</td>
+                            <td className="px-6 py-4 border-r-2 text-gray-500">{`$${product.total_price.toFixed(2)}`}</td>
+                            {index === 0 && <td className="px-6 py-4 border-r-2 font-medium text-gray-900" rowSpan={order.products.length}>{`$${order.total_price.toFixed(2)}`}</td>}
+                            {index === 0 && <td className={`px-6 py-4 border-r-2 ${order.status === "Pending" ? "text-blue-600":order.status === "Processing" ? "text-yellow-600":"text-green-600"}`} rowSpan={order.products.length}>
+                                    <span className={`bg-gray-200 px-5 py-1 rounded-3xl ${order.status === "Pending" ? "bg-blue-200":order.status === "Processing" ? "bg-yellow-200":"bg-green-200"}`}>{order.status}</span>
+                                    </td>}
+                          </tr>
+                        ))}
+                        </Fragment>
+                      ))
+                  }
+                  </tbody>
                   </table>
                 </div>
                 </div>
@@ -92,7 +127,7 @@ return (
                         xAxis={[{ data: [1, 2, 3, 5, 8, 10] }]} // Example X-axis data (e.g., months)
                         series={[
                         {
-                            data: [2, 5.5, 5, 8.5, 1.5, 5], // Example sales data
+                            data: [2, 5.5, 1, 8.5, 1.5, 5], // Example sales data
                         },
                         ]}
                         width={chartWidth}
@@ -129,7 +164,7 @@ export default admin
 
 const OrderRow = ({ id, customer, product, amount, status }) => (
   <tr className="hover:bg-gray-50 transition-colors duration-200">
-    <td className="px-6 py-4 text-sm text-gray-900 font-medium border-b">{id}</td>
+    <td className="px-6 py-4 text-sm text-gray-900 font-medium border-b" rowSpan={product.length()}>{id}</td>
     <td className="px-6 py-4 text-sm text-gray-600 border-b">{customer}</td>
     <td className="px-6 py-4 text-sm text-gray-600 border-b">{product}</td>
     <td className="px-6 py-4 text-sm text-gray-600 border-b">{amount}</td>

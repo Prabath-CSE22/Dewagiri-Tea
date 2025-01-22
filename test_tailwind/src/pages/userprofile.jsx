@@ -17,11 +17,12 @@ const userprofile = () => {
             setUserId(getAuth.data.user.user_id);
             if(getAuth.data.user.user_id) {
               const responce = await axios.post('http://localhost:3001/getaddress', {user_id: getAuth.data.user.user_id});
+              
               setAddress(responce.data.Address[0]);
             }
           
             if(getAuth.data.user.user_id) {
-              const data = await axios.post('http://localhost:3001/userdata', {user_id: getAuth.data.user.user_id});
+              const data = await axios.post('http://localhost:3001/userdata', {user_id: getAuth.data.user.user_id});              
               setUser(data.data);
               
             }else{

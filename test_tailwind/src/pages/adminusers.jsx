@@ -1,58 +1,30 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import { Link } from 'react-router-dom'
-import { Users, Search, Filter, MoreVertical, Mail, Phone } from 'lucide-react';
+import { FolderArchive, Mail, Phone, Mailbox } from 'lucide-react';
 import LogOut from '../component/ui/dropdown'
 import Actions from '../component/ui/actions'
+import axios from 'axios';
 
 const adminusers = () => {
-        const[clicked, setClicked] = useState(false);
-          const [selectedAction, setSelectedAction] = useState('');
-        
-          const handleSelectChange = (e) => {
-            setSelectedAction(e.target.value);
-            if (e.target.value === '1') {
-              console.log('Suspend action selected');
-            } else if (e.target.value === '2') {
-              console.log('Remove action selected');
-            }
-          };
+        const[clicked, setClicked] = useState(false);        
   const[showMenu, setShowMenu] = useState(false)
-  const[actionClicked, setActionClicked] = useState(false)
-  const [users] = useState([
-        {
-          id: 1,
-          name: 'Sarah Johnson',
-          email: 'sarah.j@example.com',
-          phone: '+1 234-567-8901',
-          orders: 12,
-          spent: 349.99,
-          status: 'Active',
-          lastOrder: '2024-01-15',
-          avatar: '/userf.png'
-        },
-        {
-          id: 2,
-          name: 'Michael Chen',
-          email: 'michael.c@example.com',
-          phone: '+1 234-567-8902',
-          orders: 8,
-          spent: 249.99,
-          status: 'Active',
-          lastOrder: '2024-01-12',
-          avatar: '/user.jpg'
-        },
-        {
-          id: 3,
-          name: 'Emma Wilson',
-          email: 'emma.w@example.com',
-          phone: '+1 234-567-8903',
-          orders: 5,
-          spent: 159.99,
-          status: 'Inactive',
-          lastOrder: '2023-12-28',
-          avatar: '/userf.png'
-        }
-      ]);
+  const [users, setUsers] = useState([]);
+          const [userStatus, setUserStatus] = useState([]);
+          const [lastOrder, setLastOrder] = useState([]);
+        useEffect(() => {
+                const fetchUsers = async () => {
+                        const response = await axios.get('http://localhost:3001/users');
+                        setUsers(response.data);    
+                        if (response.data){
+                                const status = await axios.get('http://localhost:3001/userStats');
+                                setUserStatus(status.data);
+                                const lastOrder = await axios.get('http://localhost:3001/lastOrder');
+                                setLastOrder(lastOrder.data);
+                        }        
+                };
+                fetchUsers();
+        }, []);
+
   return (
     <main className="bg-gray-100 font-serif mt-5 h-screen">
       <body className=' w-full  mx-auto bg-gray-200 mt-5 h-screen'>
@@ -106,17 +78,17 @@ const adminusers = () => {
                                 </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200 ">
-                                {users.map((user) => (
+                                {users.map((user) => (                                        
                                 <tr key={user.id} className="hover:bg-gray-50">
                                 <td className="px-6 py-4 whitespace-nowrap">
                                 <div className="flex items-center">
-                                        <img className="h-10 w-10 rounded-full" src={user.avatar} alt="" />
+                                        <img className="h-10 w-10 rounded-full" src={user.profile_pic || './user.jpg'} alt="" />
                                         <div className="ml-4">
-                                        <div className="font-medium text-gray-900">{user.name}</div>
+                                        <div className="font-medium text-gray-900">{user.fullname}</div>
                                         </div>
                                 </div>
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap">
+                                <td className="px-6 py-4 whitespace-nowrap ">
                                 <div className="text-sm text-gray-900">
                                         <div className="flex items-center gap-2">
                                         <Mail className="w-4 h-4" />
@@ -124,35 +96,92 @@ const adminusers = () => {
                                         </div>
                                         <div className="flex items-center gap-2 mt-1">
                                         <Phone className="w-4 h-4" />
-                                        {user.phone}
+                                        {user.phone_number}
                                         </div>
+                                        <div className="flex items-center gap-2 mt-1">
+                                        <Mailbox  className="w-4 h-4" />
+                                        <div className="text-sm text-gray-900 text-start">
+                                        <div >
+                                        {`${user.Address[0].street_line1}
+                                         ${user.Address[0].street_line2}`}
+                                        </div>
+                                         <div >
+                                         {`
+                                          ${user.Address[0].city},
+                                          ${user.Address[0].state},
+                                          ${user.Address[0].country}`}
+                                         </div>
+                                           
+                                        </div>
+                                        </div>
+                                        <div className="flex items-center gap-2 mt-1">
+                                        <FolderArchive className="w-4 h-4" />
+                                        {`${user.Address[0].ZIP_Number}`}
+                                        </div>
+                                        
                                 </div>
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                {user.orders}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                ${user.spent}
-                                </td>
+                                {
+                                        userStatus.map((userStat) => (
+                                                <>
+                                                {userStat.user_id === user.user_id ? (
+                                                <>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                        {userStat.totalOrders}
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 ">
+                                                        ${userStat.totalSpent}
+                                                </td>
+                                                </>) : (
+                                                <>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                        No orders yet
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 ">
+                                                        No orders yet
+                                                </td>
+                                                </>
+                                                )}
+                                                </>
+                                        ))
+                                }
                                 <td className="px-6 py-4 whitespace-nowrap">
                                 <span className={`px-2 py-1 text-xs rounded-full ${
-                                        user.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                                        user.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
                                 }`}>
-                                        {user.status}
+                                        {`${user.status.toUpperCase()}`}
                                 </span>
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                {user.lastOrder}
-                                </td>
+                                {
+                                        lastOrder.map((order) => (
+                                                <>
+                                                {order.user_id === user.user_id ? (
+                                                <>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                        {order.date}
+                                                </td>
+                                                </>) : (
+                                                <>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                        No orders yet
+                                                </td>
+                                                </>
+                                                )}
+                                                </>
+                                        ))
+                                }
                                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <select
-                                value={selectedAction}
-                                onChange={handleSelectChange}
+                                value={user.action}
+                                onChange={async (e) => {
+                                        const response = await axios.post('http://localhost:3001/updateAction', {user_id: user.user_id, action: e.target.value});
+                                        console.log(response.data);
+                                }}
                                 className="block w-full text-center px-1 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                 >
-                                <option value="">No action taken</option>
-                                <option value="1">Suspend</option>
-                                <option value="2">Remove</option>
+                                {user.action === "No action taken" && <option value={user.action}>{user.action}</option>}
+                                <option value="Suspended">Suspend</option>
+                                <option value="Removed">Remove</option>
                                 </select>
                                 </td>
                                 </tr>
@@ -162,8 +191,6 @@ const adminusers = () => {
 
                 </div>
         </div>
-
-
       </body>
     </main>
   )

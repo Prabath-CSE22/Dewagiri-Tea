@@ -31,7 +31,8 @@ const register = () => {
     first_vist: true,
     active: true,
     status: 'active',
-    delete_request: ''
+    delete_request: '',
+    action: "None"
   });
   
   useEffect(() => {

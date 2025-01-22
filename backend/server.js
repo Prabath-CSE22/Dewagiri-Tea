@@ -51,7 +51,7 @@ mongoose.connect(process.env.MONGODB_CONNECTION_STRING);
 
 // Define schema
 const Users = mongoose.model('users', new mongoose.Schema({
-    user_id: Number,
+    user_id: String,
     profile_pic: String,
     fullname: String,
     email: String,
@@ -71,6 +71,7 @@ const Users = mongoose.model('users', new mongoose.Schema({
     active: Boolean,
     status: String,
     delete_request: String,
+    action: String
 }));
 
 const Products = mongoose.model('products', new mongoose.Schema({
@@ -103,6 +104,96 @@ const PurchasedItems = mongoose.model('purchaseditems', new mongoose.Schema({
     invoice_num: String,
     status: String
 }));
+
+app.post('/updateAction', async (req, res) =>{
+    const {user_id, action} = req.body;
+    try {
+        const order = await Users.updateOne({ user_id: user_id }, { $set: { action: action } });
+        if (!order) {
+            res.status(404).send('Order not found');
+            return;
+        }
+        res.status(200).send('Action updated successfully');
+    } catch (error) {
+        console.error('Error in /updateStatus:', error);
+        res.status(500).send('Internal server error');
+    }
+});
+
+app.get('/lastorder', async (req, res) => {
+    try {
+        const responce = await PurchasedItems.aggregate([
+            {$sort: { _id: -1 }},
+            {$limit: 1},
+            {$project: { _id: 0, user_id: 1, date: 1}}
+        ]);
+        res.status(200).send(responce);
+    } catch (error) {
+        console.error('Error in /lastorder:', error);
+        res.status(500).send('Internal server error'); 
+    }
+})
+
+app.get('/userStats', async (req, res) => {
+    try {
+        const userStats = await PurchasedItems.aggregate([
+            {
+                $group: {
+                    _id: "$user_id", // Group by user_id
+                    totalOrders: { $count: {} }, // Count the number of documents (orders) per user
+                    totalSpent: { $sum: "$total_price" } // Sum the total_price field for each user
+                }
+            },
+            {
+                $project: {
+                    _id: 0, 
+                    user_id: "$_id", 
+                    totalOrders: 1,
+                    totalSpent: 1,
+                }
+            }
+        ]);
+
+        res.status(200).json(userStats); // Send the aggregated stats as the response
+    } catch (error) {
+        console.error('Error in /userStats:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+app.get('/users', async (req, res) => {
+    try {
+        const users = await Users.find().lean().sort({ _id: 1 });
+        users.forEach(user => delete user.password);
+        res.status(200).send(users);
+    } catch (error) {
+        console.error('Error in /users:', error);
+        res.status(500).send('Internal server error');
+    }
+});
+
+app.get('/allorders', async (req, res) => {
+    try {
+        const orders = await PurchasedItems.find().lean().sort({ _id: -1 });
+        res.status(200).send(orders);
+    } catch (error) {
+        console.error('Error in /allorders:', error);
+        res.status(500).send('Internal server error');
+    }
+});
+
+app.get('/count', async (req, res) => {
+    try {
+        const count = await Users.countDocuments();
+        const countProducts = await Products.countDocuments();
+        const countOrders = await PurchasedItems.countDocuments();
+        const revenue = await PurchasedItems.aggregate([{ $group: { _id: null, total: { $sum: '$total_price' } } }]);
+        res.status(200).send({ count, countProducts, countOrders, revenue: revenue[0].total });
+    } catch (error) {
+        console.error('Error in /usercount:', error);
+        res.status(500).send('Internal server error');
+    }
+});
 
 app.post('/orders', async (req, res) => {
     const { user_id } = req.body;
@@ -273,7 +364,7 @@ app.post('/updateaddress', async (req, res) => {
 app.post('/getaddress', async (req, res) => {
     const { user_id } = req.body;
     try {
-        const user = await Users.findOne({ user_id }, { Address: 1, _id: 0 });
+        const user = await Users.findOne({ user_id: user_id }, { Address: 1, _id: 0 });
         if (!user) {
             res.status(404).send('User not found');
             return;
@@ -334,17 +425,17 @@ app.get('/emails', async (req, res) => {
 });
 
 app.post('/register', async (req, res) => {
-    const numOne = Math.floor(100 + Math.random() * 900).toString();
+    const numOne = Math.floor(10 + Math.random() * 90).toString();
     const numTwo = Math.floor(100 + Math.random() * 900).toString();
     const year = Math.floor((new Date().getFullYear())%100);
-    const month = new Date().getMonth();
+    const month = new Date().getMonth()+1;
     const date = new Date().getDate();
-    const user_id = parseInt(year + numOne + month + numTwo + date );
+    const user_id = `UID-${month}${Math.floor((numOne*year)/date)}-${date}${Math.round(numTwo*month/year)}`;
     try {
-        const {profile_pic, fullname, email, phone_number, Address, user_name, role, first_vist, active, status, delete_request } = req.body;
+        const {profile_pic, fullname, email, phone_number, Address, user_name, role, first_vist, active, status, delete_request, action } = req.body;
         const password = await bcrypt.hash(req.body.password, 10);
         console.log('Password:',password);
-        const user = new Users({user_id, profile_pic, fullname, email, phone_number, Address, user_name, password, role, first_vist, active, status, delete_request });
+        const user = new Users({user_id, profile_pic, fullname, email, phone_number, Address, user_name, password, role, first_vist, active, status, delete_request, action });
         await user.save();
         res.status(200).send('User registered successfully');
     } catch (error) {
