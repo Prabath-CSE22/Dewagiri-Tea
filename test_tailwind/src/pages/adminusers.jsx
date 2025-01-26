@@ -23,7 +23,7 @@ const adminusers = () => {
                         }        
                 };
                 fetchUsers();
-        }, []);
+        }, [userStatus]);
 
   return (
     <main className="bg-gray-100 font-serif mt-5 h-screen">
@@ -174,15 +174,39 @@ const adminusers = () => {
                                 <select
                                 value={user.action}
                                 onChange={async (e) => {
-                                        const response = await axios.post('http://localhost:3001/updateAction', {user_id: user.user_id, action: e.target.value});
-                                        console.log(response.data);
+                                try {
+                                const response = await axios.post('http://localhost:3001/updateAction', {
+                                        user_id: user.user_id,
+                                        action: e.target.value,
+                                });
+                                console.log(response.data);
+                                } catch (error) {
+                                console.error("Error updating action:", error);
+                                }
                                 }}
-                                className="block w-full text-center px-1 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                className={`block w-full text-center px-2 py-2 text-sm rounded-md shadow-sm focus:outline-none sm:text-sm
+                                ${
+                                user.action === "Suspended"
+                                        ? "bg-yellow-100 text-yellow-800 border-yellow-500"
+                                        : user.action === "Removed"
+                                        ? "bg-red-100 text-red-800 border-red-500"
+                                        : "bg-gray-50 text-gray-700 border-gray-300"
+                                }
+                                focus:ring-blue-500 focus:border-blue-500`}
                                 >
-                                {user.action === "No action taken" && <option value={user.action}>{user.action}</option>}
-                                <option value="Suspended">Suspend</option>
-                                <option value="Removed">Remove</option>
+                                {(user.action === "No action taken" || user.action == null) && (
+                                <option value={user.action} className="bg-gray-100 text-gray-600">
+                                Take an action
+                                </option>
+                                )}
+                                <option value="Suspended" className="bg-yellow-100 text-yellow-800">
+                                Suspend
+                                </option>
+                                <option value="Removed" className="bg-red-100 text-red-800">
+                                Remove
+                                </option>
                                 </select>
+
                                 </td>
                                 </tr>
                                 ))}
