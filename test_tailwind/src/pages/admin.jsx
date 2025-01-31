@@ -24,7 +24,7 @@ const admin = () => {
               setOrders(responseOrders.data);
             }
             fetchData();
-          }, [])
+          }, []);
 return (
     <main className="bg-gray-100 font-serif mt-5">
             <body className=' w-full  mx-auto bg-gray-200 mt-5 '>
@@ -106,9 +106,42 @@ return (
                             <td className="px-6 py-4 border-r-2 text-gray-500">{product.quantity}</td>
                             <td className="px-6 py-4 border-r-2 text-gray-500">{`$${product.total_price.toFixed(2)}`}</td>
                             {index === 0 && <td className="px-6 py-4 border-r-2 font-medium text-gray-900" rowSpan={order.products.length}>{`$${order.total_price.toFixed(2)}`}</td>}
-                            {index === 0 && <td className={`px-6 py-4 border-r-2 ${order.status === "Pending" ? "text-blue-600":order.status === "Processing" ? "text-yellow-600":"text-green-600"}`} rowSpan={order.products.length}>
-                                    <span className={`bg-gray-200 px-5 py-1 rounded-3xl ${order.status === "Pending" ? "bg-blue-200":order.status === "Processing" ? "bg-yellow-200":"bg-green-200"}`}>{order.status}</span>
-                                    </td>}
+                            {index === 0 && (
+                            <td
+                              className={`px-6 py-4 border-r-2 ${
+                                order.status === "Pending"
+                                  ? "text-blue-600"
+                                  : order.status === "Processing"
+                                  ? "text-yellow-600"
+                                  : "text-green-600"
+                              }`}
+                              rowSpan={order.products.length}
+                            >
+                              <select
+                                className={`block w-full text-center px-2 py-2 text-sm rounded-md shadow-sm focus:outline-none sm:text-sm ${
+                                  order.status === "Pending"
+                                    ? "bg-blue-200 text-blue-600"
+                                    : order.status === "Processing"
+                                    ? "bg-yellow-200 text-yellow-600"
+                                    : "bg-green-200 text-green-600"
+                                }`}
+                                value={order.status}
+                                onChange={async (e) => {
+                                    try {
+                                      const response = await axios.post("http://localhost:3001/updatestatus", {invoice_num: order.invoice_num, status: e.target.value});
+                                      console.log(response.data);
+                                      window.location.reload();
+                                    } catch (error) {
+                                      console.error(error);
+                                    }
+                                }}
+                              >
+                                {order.status === "Pending" && <option value="Pending" className="bg-blue-200 text-blue-600">Pending</option>}
+                                {order.status === "Processing" && <option value="Processing" className="bg-yellow-200 text-yellow-600">Processing</option>}
+                                <option value="Delivered" className="bg-green-200 text-green-600">Delivered</option>
+                              </select>
+                            </td>
+                          )}
                           </tr>
                         ))}
                         </Fragment>
@@ -161,25 +194,3 @@ return (
 }
 
 export default admin
-
-const OrderRow = ({ id, customer, product, amount, status }) => (
-  <tr className="hover:bg-gray-50 transition-colors duration-200">
-    <td className="px-6 py-4 text-sm text-gray-900 font-medium border-b" rowSpan={product.length()}>{id}</td>
-    <td className="px-6 py-4 text-sm text-gray-600 border-b">{customer}</td>
-    <td className="px-6 py-4 text-sm text-gray-600 border-b">{product}</td>
-    <td className="px-6 py-4 text-sm text-gray-600 border-b">{amount}</td>
-    <td className="px-6 py-4">
-      <span
-        className={`px-3 py-1 text-xs font-medium rounded-full ${
-          status === "Delivered"
-            ? "bg-green-100 text-green-800"
-            : status === "Processing"
-            ? "bg-blue-100 text-blue-800"
-            : "bg-yellow-100 text-yellow-800"
-        }`}
-      >
-        {status}
-      </span>
-    </td>
-  </tr>
-);

@@ -105,6 +105,62 @@ const PurchasedItems = mongoose.model('purchaseditems', new mongoose.Schema({
     status: String
 }));
 
+app.post('/editproduct', async (req, res) => {
+    const { product_id, name, category, price, stock, status, image } = req.body;
+    try {
+        const product = await Products.updateOne({ product_id: product_id }, { $set: { name, category, price, stock, status, image } });
+        res.status(200).send('Product updated successfully');
+    } catch (error) {
+        console.error('Error in /editproduct:', error);
+        res.status(500).send('Internal server error');
+    }
+});
+
+app.post('/viewproduct', async (req, res) => {
+    const { product_id } = req.body;
+    try {
+        const product = await Products.findOne({ product_id }, { _id: 0 });
+        if (!product) {
+            res.status(404).send('Product not found');
+            return;
+        }
+        res.status(200).send(product);
+    } catch (error) {
+        console.error('Error in /viewproduct:', error);
+        res.status(500).send('Internal server error');
+    }
+});
+
+app.delete('/delproduct/:product_id', async (req, res) => {
+    const {product_id} = req.params;
+    try {
+        const del = await Products.deleteOne({product_id : product_id});
+        if(!del){
+            res.status(404).send('Product not found');
+            return;
+        }
+        res.status(200).send('Product deleted succecfully');
+    } catch (error) {
+        console.error("Error in /delproduct", error);
+        res.status(500).send('Internal server error');
+    }
+});
+
+app.post('/updateStatus', async (req, res) => {
+    const {invoice_num, status} = req.body;
+    try {
+        const order = await PurchasedItems.updateOne({ invoice_num: invoice_num }, { $set: { status: status } });
+        if (!order) {
+            res.status(404).send('Order not found');
+            return;
+        }
+        res.status(200).send('Status updated successfully');
+    } catch (error) {
+        console.error('Error in /updateStatus:', error);
+        res.status(500).send('Internal server error');
+    }
+});
+
 app.post('/updateAction', async (req, res) =>{
     const {user_id, action} = req.body;
     try {

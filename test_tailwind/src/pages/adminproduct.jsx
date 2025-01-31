@@ -4,12 +4,23 @@ import Adprocard from '../component/ui/adminproductcard'
 import AddItem from '../component/additem'
 import LogOut from '../component/ui/dropdown'
 import { UsersRound, PackagePlus } from 'lucide-react';
+import axios from 'axios'
 
 const adminproduct = () => {
     const[showMenu, setShowMenu] = useState(false)
     const[clicked, setClicked] = useState(false)
+    const [products, setProducts] = useState([]);
     useEffect(() => {
         document.getElementById('top').scrollIntoView({ behavior: 'smooth' });
+        const fetchProducts = async () => {
+                try {
+                        const products = await axios.get('http://localhost:3001/products');
+                        setProducts(products.data);
+                } catch (error) {
+                        console.log(error);
+                }
+        }
+        fetchProducts();
         }, [])
   return (
     <main className="bg-gray-100 font-serif mt-5 h-screen scroll-smooth focus:scroll-auto">
@@ -55,12 +66,17 @@ const adminproduct = () => {
                 </nav>
                 {clicked && <LogOut  msg={"logout"}/>}
                 <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg shadow-md w-[99%] m-auto mt-1">
-                <Adprocard />
-                <Adprocard />
-                <Adprocard />
-                <Adprocard />
-                <Adprocard />
-                <Adprocard />
+                {products.map((product) => (
+                        <Adprocard 
+                        product_id={product.product_id}
+                        name = {product.name}
+                        category = {product.category}
+                        status = {product.status}
+                        price = {product.price}
+                        stock = {product.stock}
+                        image = {product.image || "./OIP.jpg"}
+                        />
+                ))}
                 </div>
                 
                 <div id='additem'>

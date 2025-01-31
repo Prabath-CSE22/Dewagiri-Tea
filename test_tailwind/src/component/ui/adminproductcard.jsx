@@ -1,8 +1,12 @@
 
-import React from 'react';
+import React, {useState} from 'react';
 import { Pencil, Trash2, ExternalLink } from 'lucide-react';
+import axios from 'axios';
+import ViewProduct from '../viewproduct';
+import EditProduct from '../editproduct';
 
 const AdminProductCard = ({ 
+  product_id = 10,
   name = "Product Name",
   category = "Category",
   status = "In Stock",
@@ -10,6 +14,9 @@ const AdminProductCard = ({
   stock = "10",
   image = "./OIP.jpg"
 }) => {
+
+  const [isViewClicked, setIsviewClicked] = useState(false);
+  const [isEditClicked, setIsEditClicked] = useState(false);
   return (
     <div className="flex flex-col bg-white p-4 rounded-lg shadow-lg border border-gray-200 w-full">
       <div className="aspect-video w-full relative">
@@ -41,20 +48,39 @@ const AdminProductCard = ({
         </div>
         
         <div className="flex gap-2 mt-4 pt-4 border-t border-gray-200">
-          <button className="flex items-center px-3 py-2 text-sm border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors active:scale-95">
+          <button className="flex items-center px-3 py-2 text-sm border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors active:scale-95"
+            onClick={() => {
+              setIsEditClicked(!isEditClicked);
+            }}
+          >
             <Pencil className="w-4 h-4 mr-2" />
             Edit
           </button>
-          <button className="flex items-center px-3 py-2 text-sm border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors active:scale-95 text-red-600 hover:border-red-200">
+          <button className="flex items-center px-3 py-2 text-sm border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors active:scale-95 text-red-600 hover:border-red-200"
+            onClick={async () => {
+                try {
+                  const responce = await axios.delete(`http://localhost:3001/delproduct/${product_id}`);
+                  console.log(responce.data);
+                } catch (error) {
+                  console.log(error);
+                }
+            }}
+          >
             <Trash2 className="w-4 h-4 mr-2" />
             Delete
           </button>
-          <button className="flex items-center px-3 py-2 text-sm border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors active:scale-95 ml-auto">
-            <ExternalLink className="w-4 h-4 mr-2" />
-            View
+          <button className="flex items-center px-3 py-2 text-sm border border-green-200 rounded-lg hover:bg-green-50 transition-colors active:scale-95 ml-auto"
+            onClick={() =>{
+                setIsviewClicked(!isViewClicked);
+            }}
+          >
+            <ExternalLink className="w-4 h-4 mr-2 text-green-500" />
+            <span className='text-green-500'>View</span>
           </button>
         </div>
       </div>
+      {isViewClicked && <ViewProduct product_id={product_id} isViewClicked={isViewClicked} setIsViewClicked={setIsviewClicked}/>}
+      {isEditClicked && <EditProduct product_id={product_id} isEditClicked={isEditClicked} setIsEditClicked={setIsEditClicked}/>}
     </div>
   );
 };

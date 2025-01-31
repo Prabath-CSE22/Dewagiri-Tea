@@ -205,6 +205,11 @@ const adminusers = () => {
                                 <option value="Removed" className="bg-red-100 text-red-800">
                                 Remove
                                 </option>
+                                {(user.action === 'Suspended') && (
+                                        <option value="No action taken" className='bg-green-100 text-green-800'>
+                                                Dismissed
+                                        </option>
+                                )}
                                 </select>
 
                                 </td>
