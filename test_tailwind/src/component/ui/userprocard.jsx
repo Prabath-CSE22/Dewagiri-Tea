@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react'
 import { ShoppingCart, Heart } from 'lucide-react';
+import ViewProduct from '../viewproduct';
 import axios from 'axios';
 
 const userprocard = ({ 
@@ -15,6 +16,7 @@ const userprocard = ({
     const [isFav, setIsFav] = useState(false);
     const [quantity, setQuantity] = useState(0);
     const [nstock, setStock] = useState(stock);
+    const [isViewClicked, setIsViewClicked] = useState(false);
     const [nstatus, setStatus] = useState(status);
     const [cart, setCart] = useState({
       user_id: user_id,
@@ -55,6 +57,9 @@ const userprocard = ({
           src={image || "./OIP.jpg"} 
           alt={name} 
           className="w-full h-full object-cover rounded-md"
+          onClick={() => {
+            setIsViewClicked(!isViewClicked);
+          }}
         />
       </div>
       
@@ -110,6 +115,7 @@ const userprocard = ({
                 {!isFav ? <i class='bx bx-heart text-3xl text-gray-500 hover:text-red-500' ></i> : <i class='bx bxs-heart text-3xl text-red-500 hover:text-red-400'></i>}
             </button>
         </div>
+        {isViewClicked && <ViewProduct product_id={product_id} isViewClicked={isViewClicked} setIsViewClicked={setIsViewClicked}/>}
     </div>
   )
 }

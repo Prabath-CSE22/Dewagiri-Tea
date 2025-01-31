@@ -30,9 +30,9 @@ const register = () => {
     role: 'user',
     first_vist: true,
     active: true,
-    status: 'active',
+    status: 'offline',
     delete_request: '',
-    action: "None"
+    action: "No action taken"
   });
   
   useEffect(() => {

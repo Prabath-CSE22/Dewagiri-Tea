@@ -78,6 +78,7 @@ const Products = mongoose.model('products', new mongoose.Schema({
     product_id: Number,
     name: String,
     category: String,
+    description: String,
     price: Number,
     stock: Number,
     status: String,
@@ -105,10 +106,11 @@ const PurchasedItems = mongoose.model('purchaseditems', new mongoose.Schema({
     status: String
 }));
 
+
 app.post('/editproduct', async (req, res) => {
-    const { product_id, name, category, price, stock, status, image } = req.body;
+    const { product_id, name, category, description, price, stock, status, image } = req.body;
     try {
-        const product = await Products.updateOne({ product_id: product_id }, { $set: { name, category, price, stock, status, image } });
+        const product = await Products.updateOne({ product_id: product_id }, { $set: { name, category, description, price, stock, status, image } });
         res.status(200).send('Product updated successfully');
     } catch (error) {
         console.error('Error in /editproduct:', error);
@@ -367,8 +369,8 @@ app.get('/products', async (req, res)=>{
 app.post('/addproduct', async (req, res) => {
     const product_id = new Date().getTime()%10000000;
     try {
-        const {name, category, price, stock, status, image } = req.body;
-        const product = new Products({product_id, name, category, price, stock, status, image });
+        const {name, category, description, price, stock, status, image } = req.body;
+        const product = new Products({product_id, name, category, description, price, stock, status, image });
         await product.save();
         res.status(200).send('Product added successfully');
     } catch (error) {
@@ -518,6 +520,9 @@ app.post('/login', async (req, res) => {
             return res.status(401).json({ message: "Invalid email or password" });
         }
 
+        const changeStatus = await Users.updateOne({user_id : user.user_id}, {$set: {status : "active"}});
+        console.log(changeStatus);
+        
         // Create token - remove sensitive info
         // const userObject = user.toObject();
         // delete userObject.password; // Remove password from token payload
@@ -532,7 +537,7 @@ app.post('/login', async (req, res) => {
             maxAge: 3600000 // 1 hour
         });
 
-        return res.status(200).json({ message: 'Login successful' });
+        return res.status(200).json({ message: 'Login successful' , first_vist: user.first_vist});
         }
 
     } catch (error) {
@@ -555,7 +560,9 @@ app.get('/checkauth', (req, res) => {
     }
 });
 
-app.get('/logout', (req, res) => {
+app.get('/logout', async (req, res) => {
+    const token = jwt.verify(req.cookies.DewTeatoken, process.env.JWT_SECRET_KEY);
+    await Users.updateOne({user_id: token.user_id}, {$set: {status: "offline"}});
     res.clearCookie('DewTeatoken').send('Cookie cleared').status(200);
 });
 

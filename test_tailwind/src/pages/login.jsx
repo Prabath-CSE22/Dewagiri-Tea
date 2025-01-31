@@ -30,7 +30,7 @@ const login = () => {
         
         if (response.data.message === 'Login successful') {
             console.log('Login successful:', response.data);
-            navigate('/home');
+            response.data.first_vist ? navigate('/profile') : navigate('/home');
         } else {
             alert('Login failed');
         }

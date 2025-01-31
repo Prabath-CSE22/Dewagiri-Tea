@@ -157,10 +157,10 @@ return (
                     <p className="text-sm text-gray-500 mb-6">Track sales data over the past months to identify trends and patterns.</p>
 
                     <LineChart
-                        xAxis={[{ data: [1, 2, 3, 5, 8, 10] }]} // Example X-axis data (e.g., months)
+                        xAxis={[{ data: [1, 2, 3, 5, 8, 10, 11] }]} // Example X-axis data (e.g., months)
                         series={[
                         {
-                            data: [2, 5.5, 1, 8.5, 1.5, 5], // Example sales data
+                            data: [2, 5.5, 1, 8.5, 1.5, 5, 11], // Example sales data
                         },
                         ]}
                         width={chartWidth}
@@ -175,11 +175,12 @@ return (
 
                 
                     <BarChart
-                        xAxis={[{ scaleType: 'band', data: ['Group A', 'Group B', 'Group C'] }]} // Example X-axis labels
+                        xAxis={[{ scaleType: 'band', data: ['Group A', 'Group B', 'Group C', 'Group D'] }]} // Example X-axis labels
                         series={[
-                        { data: [4, 3, 5] }, // Example data for series 1
-                        { data: [1, 6, 3] }, // Example data for series 2
-                        { data: [2, 5, 6] }, // Example data for series 3
+                        { data: [4, 3, 5, 10] }, // Example data for series 1
+                        { data: [1, 6, 3, 5] }, // Example data for series 2
+                        { data: [2, 9, 6, 2] }, // Example data for series 3
+                        { data: [1, 5, 7, 3] }
                         ]}
                         width={chartWidth}
                         height={300}

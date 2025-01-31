@@ -17,6 +17,7 @@ const defaulthome = () => {
   const[products, setProduts] = useState([]);
   const[auth, setAuth] = useState([]);
   useEffect(() => {
+
     document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
 
     const fetchProduts = async () => {

@@ -4,6 +4,7 @@ import LogOut from '../component/ui/dropdown'
 import { ArrowLeftRight, ShoppingBag } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom'
 import { Upload, X } from 'lucide-react';
+import FirstVisitMsg from '../component/ui/firstvistmsg';
 import axios from 'axios';
 const userprofile = () => {
   useEffect(() => {
@@ -25,6 +26,10 @@ const userprofile = () => {
               const data = await axios.post('http://localhost:3001/userdata', {user_id: getAuth.data.user.user_id});              
               setUser(data.data);
               
+              if(data.data.first_vist){
+                setIsFirstVist(true);
+              }
+              
             }else{
               console.log('User ID not found');
             }
@@ -40,6 +45,7 @@ const userprofile = () => {
   const[showMenu, setShowMenu] = useState(false);
   const[clicked, setClicked] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
+  const [isFirstVist, setIsFirstVist] = useState(false);
   
   const[user, setUser] = useState({
     fullname:"",
@@ -423,7 +429,8 @@ const userprofile = () => {
                                 </div>
                               </div>
                 </div>
-            </div>         
+            </div>
+            {isFirstVist && <FirstVisitMsg isFirstVist={isFirstVist} setIsFirstVist={setIsFirstVist}/>}         
         </body>
         <Footer />
     </main>

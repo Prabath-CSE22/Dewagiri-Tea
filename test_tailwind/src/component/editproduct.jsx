@@ -8,6 +8,7 @@ const EditProduct = ({product_id, isEditClicked, setIsEditClicked}) => {
     product_id: '',
     name: '',
     category: '',
+    description: '',
     price: '',
     stock: '',
     status: '',
@@ -125,6 +126,17 @@ const EditProduct = ({product_id, isEditClicked, setIsEditClicked}) => {
 
             {/* Right Column */}
             <div className="space-y-6">
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Product Description</label>
+                <textarea
+                  className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  rows="4"
+                  value={formData.description}
+                  onChange={(e) => setFormData({...formData, description: e.target.value})}
+                  required
+                ></textarea>
+              </div>
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Price ($)</label>
