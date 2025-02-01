@@ -25,6 +25,29 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const getadmincustTemplate = async () => {
+    try {
+        const templatePath = path.join(__dirname, 'templates', 'admincustomer.html');
+        const template = await fs.readFile(templatePath, 'utf8');
+        return template;
+        
+    } catch (error) {
+        console.error('Error reading email template:', error);
+        throw error;
+    }
+}
+
+const getCustomerCompTemplate = async () => {
+    try {
+        const templatePath = path.join(__dirname, 'templates', 'customercomp.html');
+        const template = await fs.readFile(templatePath, 'utf8');
+        return template;
+    } catch (error) {
+        console.error('Error reading email template:', error);
+        throw error;
+    }
+}
+
 async function getEmailTemplate() {
     try {
         const templatePath = path.join(__dirname, 'templates', 'emailTemplate.html');
@@ -565,6 +588,72 @@ app.get('/logout', async (req, res) => {
     await Users.updateOne({user_id: token.user_id}, {$set: {status: "offline"}});
     res.clearCookie('DewTeatoken').send('Cookie cleared').status(200);
 });
+
+app.post('/sendcomplain', async (req, res) => {
+    try {
+        const { email, name, message } = req.body;
+        const subject = `Complaint from ${name}`;
+
+        // Get templates
+        const customerTemplate = await getCustomerCompTemplate();
+        const adminTemplate = await getadmincustTemplate();
+
+        // Prepare customer template
+        const filledCustomerTemplate = customerTemplate
+            .replace('${submission_date}', new Date().toLocaleString())
+            .replace('${reference_number}', Math.floor(1000 + Math.random() * 9000))
+            .replace('${customer_message}', message)
+            .replace('${customer_name}', name)
+            .replace('${customer_email}', email);
+
+        // Prepare admin template
+        const filledAdminTemplate = adminTemplate
+            .replace('${customer_message}', message)
+            .replace('${customer_name}', name)
+            .replace('${customer_email}', email)
+            .replace('${submission_date}', new Date().toLocaleString());
+
+        // Create mail options
+        const adminMailOptions = {
+            from: process.env.MY_EMAIL_ADDRESS,
+            to: process.env.ADMIN_EMAIL_ADDRESS,
+            subject: subject,
+            html: filledAdminTemplate
+        };
+
+        const customerMailOptions = {
+            from: process.env.MY_EMAIL_ADDRESS,
+            to: email,
+            subject: subject,
+            html: filledCustomerTemplate
+        };
+
+        // Send both emails
+        await Promise.all([
+            sendMail(adminMailOptions),
+            sendMail(customerMailOptions)
+        ]);
+
+        res.status(200).json({ message: 'Emails sent successfully' });
+
+    } catch (error) {
+        console.error('Error in /sendcomplain:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Helper function to promisify sendMail
+function sendMail(mailOptions) {
+    return new Promise((resolve, reject) => {
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(info);
+            }
+        });
+    });
+}
 
 app.post('/sendemail', async (req, res) => {
     try {

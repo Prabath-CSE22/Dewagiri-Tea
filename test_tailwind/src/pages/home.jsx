@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ChevronRight, Star, Clock, Leaf, User } from 'lucide-react';
 import Carousel from '../component/ui/carousel';
 import { useNavigate } from 'react-router-dom';
+import axios from "axios";
 
 const HomePage = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -168,7 +169,12 @@ const HomePage = () => {
               <p className="text-gray-600">At DewTea, we believe in the transformative power of a perfect cup of tea. Founded in 2010, we've dedicated ourselves to sourcing the finest teas from sustainable gardens around the world.</p>
               <p className="text-gray-600">Our expert tea masters carefully select each variety, ensuring that only the highest quality leaves make it to your cup. We take pride in supporting ethical farming practices and maintaining direct relationships with our tea growers.</p>
               <div className="pt-4">
-                <button className="bg-emerald-600 text-white px-6 py-2 rounded-lg hover:bg-emerald-700 transition duration-300">
+                <button className="bg-emerald-600 text-white px-6 py-2 rounded-lg hover:bg-emerald-700 transition duration-300"
+                  onClick={() => {
+                    const newwindow = window.open('https://www.devagiri-estate.com/story', '_blank');
+                    if (newwindow) newwindow.opener = null;
+                  }}
+                >
                   Learn More
                 </button>
               </div>
@@ -216,7 +222,26 @@ const HomePage = () => {
               </div>
             </div>
             <div className="bg-gray-50 p-6 rounded-lg shadow-md">
-              <form className="space-y-4">
+              <form className="space-y-4"
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  try{
+                    const sendEmails = await axios.post("http://localhost:3001/sendcomplain", {
+                      name: e.target[0].value,
+                      email: e.target[1].value,
+                      message: e.target[2].value
+                    });
+                    if (sendEmails.status === 200) {
+                      console.log("Email sent successfully!");
+                      e.target.reset();
+                    } else {
+                      console.log("Failed to send email. Please try again later.");
+                    }
+                  }catch(err){
+                    console.log(err);
+                  }
+                }}
+              >
                 <div>
                   <label className="block text-gray-700 mb-2">Name</label>
                   <input type="text" className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-emerald-500" />
@@ -229,7 +254,7 @@ const HomePage = () => {
                   <label className="block text-gray-700 mb-2">Message</label>
                   <textarea className="w-full p-2 border border-gray-300 rounded-lg h-32 focus:outline-none focus:border-emerald-500"></textarea>
                 </div>
-                <button className="w-full bg-emerald-600 text-white px-6 py-2 rounded-lg hover:bg-emerald-700 transition duration-300">
+                <button type='submit' className="w-full bg-emerald-600 text-white px-6 py-2 rounded-lg hover:bg-emerald-700 transition duration-300">
                   Send Message
                 </button>
               </form>
