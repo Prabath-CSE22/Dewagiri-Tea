@@ -5,6 +5,7 @@ import { ArrowLeftRight, ShoppingBag } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom'
 import { Upload, X } from 'lucide-react';
 import FirstVisitMsg from '../component/ui/firstvistmsg';
+import MsgBox from '../component/ui/msgBox';
 import axios from 'axios';
 const userprofile = () => {
   useEffect(() => {
@@ -73,6 +74,8 @@ const userprofile = () => {
     const hasLowerCase = /[a-z]/.test(password);
     const hasNumber = /[0-9]/.test(password);
     const hasSpecialChar = /[!@#$%^&*]/.test(password);
+    const [showMsg, setShowMsg] = useState(false);  // Changed to false initially
+    const [msgConfig, setMsgConfig] = useState({ message: '', type: 'success' });
 
     const handleImageChange = (e) => {
       const file = e.target.files[0];
@@ -219,10 +222,12 @@ const userprofile = () => {
                                                 phone_number: user.phone_number,
                                                 first_vist: false,
                                                 profile_pic: user.profile_pic
-                                              });
-                                              console.log(respond.data);
+                                              });                                              
+                                              setMsgConfig({ message: respond.data, type: 'success' });
+                                              setShowMsg(true);
                                             } catch (error) {
-                                              console.log(error);
+                                              setMsgConfig({ message: error.response.data, type: 'error' });  
+                                              setShowMsg(true);
                                             }
                                           }}
                                           disabled={!user.fullname || !user.email || !user.phone_number}
@@ -319,9 +324,13 @@ const userprofile = () => {
                                                 country: address.country,
                                                 ZIP_Number: address.ZIP_Number
                                               });
-                                              console.log(respond.data);
+                                              
+                                              setMsgConfig({ message: respond.data, type: 'success' });
+                                              setShowMsg(true);
                                             } catch (error) {
-                                              console.log(error);
+                                              
+                                              setMsgConfig({ message: error.response.data, type: 'error' });
+                                              setShowMsg(true);
                                             }
                                           }}
                                         >
@@ -365,9 +374,13 @@ const userprofile = () => {
                                                 user_id, 
                                                 password: password
                                               });
-                                              console.log(respond.data);
+                                              
+                                              setMsgConfig({ message: respond.data.message, type: 'success' });
+                                              setShowMsg(true);
                                             } catch (error) {
-                                              console.log(error);
+                                        
+                                              setMsgConfig({ message: error.response.data.message, type: 'error' });
+                                              setShowMsg(true);
                                             }
                                             document.getElementById('password').value = '';
                                             document.getElementById('confirmPassword').value = '';
@@ -432,6 +445,7 @@ const userprofile = () => {
             </div>
             {isFirstVist && <FirstVisitMsg isFirstVist={isFirstVist} setIsFirstVist={setIsFirstVist}/>}         
         </body>
+        {showMsg && <MsgBox message={msgConfig.message} type={msgConfig.type} onClose={() => setShowMsg(false)} />}
         <Footer />
     </main>
   )

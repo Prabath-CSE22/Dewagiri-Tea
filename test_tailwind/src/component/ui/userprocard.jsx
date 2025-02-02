@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import { ShoppingCart, Heart } from 'lucide-react';
 import ViewProduct from '../viewproduct';
+import MsgBox from './msgBox';
 import axios from 'axios';
 
 const userprocard = ({ 
@@ -19,6 +20,7 @@ const userprocard = ({
     const [isViewClicked, setIsViewClicked] = useState(false);
     const [nstatus, setStatus] = useState(status);
     const [cart, setCart] = useState({
+      product_id: product_id,
       user_id: user_id,
       name: name,
       quantity: quantity,
@@ -26,11 +28,15 @@ const userprocard = ({
       image: image,
     });
 
+    const [showMsg, setShowMsg] = useState(false);  // Changed to false initially
+    const [msgConfig, setMsgConfig] = useState({ message: '', type: 'success' });
+
     const setpriqun = async () => {
       setStock(nstock-quantity);
       setQuantity(0);
-      const addToCart = await axios.post('http://localhost:3001/addtocart', cart);
-      console.log(addToCart.data);
+      const addToCart = await axios.post('http://localhost:3001/addtocart', {...cart});
+      setMsgConfig({ message: addToCart.data, type: 'success' });
+      setShowMsg(true);
       if(addToCart.status === 200){
         const updateProduct = await axios.post('http://localhost:3001/updateproduct', {
           product_id: product_id, 
@@ -38,16 +44,19 @@ const userprocard = ({
           status: (nstock-quantity) === 0 ? 'Out of Stock' : (nstock-quantity) >= 5 ? 'In Stock' : 'Low Stock'
         });
         console.log(updateProduct.data);
+        setMsgConfig({message: addToCart.data, type: 'success'});
+        setShowMsg(true)
       }
     }
     useEffect(() => {
       setCart({
+        product_id: product_id,
         user_id: user_id,
         name: name,
         quantity: quantity,
         price: price*quantity,
         image: image,
-      });
+      });      
     }, [quantity]);
 
   return (
@@ -105,7 +114,6 @@ const userprocard = ({
             <button className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors active:scale-95 disabled:opacity-50 disabled:active:scale-100" 
             onClick={async () => {
                 setpriqun();
-                
               }}
               disabled={quantity === 0 || nstock === 0}>
                 <ShoppingCart className="w-4 h-4" />
@@ -116,6 +124,7 @@ const userprocard = ({
             </button>
         </div>
         {isViewClicked && <ViewProduct product_id={product_id} isViewClicked={isViewClicked} setIsViewClicked={setIsViewClicked}/>}
+        {showMsg && <MsgBox message={msgConfig.message} type={msgConfig.type} onClose={() => setShowMsg(false)}/>}
     </div>
   )
 }

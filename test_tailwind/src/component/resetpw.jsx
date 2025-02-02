@@ -1,5 +1,6 @@
 import React, {useState} from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import MsgBox from './ui/msgBox'
 import axios from 'axios'
 const resetpw = ({user_id}) => {
     const navigate = useNavigate()
@@ -12,6 +13,8 @@ const resetpw = ({user_id}) => {
     const hasNumber = /[0-9]/.test(password);
     const hasSpecialChar = /[!@#$%^&*]/.test(password);
     const passwordsMatch = password === confirmPassword && password !== '';
+    const [showMsg, setShowMsg] = useState(false);  // Changed to false initially
+    const [msgConfig, setMsgConfig] = useState({ message: '', type: 'success' });
 
   return (
     <main className="bg-gray-100 h-screen font-serif">
@@ -75,7 +78,13 @@ const resetpw = ({user_id}) => {
                 disabled={!passwordsMatch || !hasMinLength || !hasUpperCase || !hasLowerCase || !hasNumber || !hasSpecialChar} onClick={async () => {
                     if(passwordsMatch && hasMinLength && hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar) {
                         const resetPassword = await axios.post('http://localhost:3001/changePassword', {user_id: user_id, password: confirmPassword});
-                        console.log(resetPassword.data);
+                        if(resetPassword.status === 200) {
+                            setMsgConfig({ message: resetPassword.data, type: 'success' });
+                            setShowMsg(true);
+                        } else {
+                            setMsgConfig({ message: resetPassword.data, type: 'error' });
+                            setShowMsg(true);
+                        }
                     }
                     navigate('/login'); 
                 }}>
@@ -89,6 +98,7 @@ const resetpw = ({user_id}) => {
                 </p>            </div>    
             </div>           
         </body>
+        {showMsg && <MsgBox message={msgConfig.message} type={msgConfig.type} onClose={() => setShowMsg(false)}/>}
     </main>
   )
 }

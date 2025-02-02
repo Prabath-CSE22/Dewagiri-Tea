@@ -1,17 +1,34 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import { useNavigate } from "react-router-dom";
 import { Check, MapPin, Truck, CreditCard, X, Package, Phone, Calendar } from "lucide-react";
+import MsgBox from "./ui/msgBox";
+import axios from "axios";
 
-export default function OrderSum({ id, isClicked, setIsClicked, orderData }) {
+export default function OrderSum({ user_id, isClicked, setIsClicked, orderData }) {
+    useEffect(() => {
+        console.log(orderData);
+    }, [orderData]);
+
     const router = useNavigate();
-
-    const handleConfirm = () => {
-        console.log('Final Order Data:', {
-            userId: id,
-            ...orderData
-        });
-        setIsClicked(!isClicked);
+      const [random, setRandom] = useState(`INV-${new Date().getFullYear()}-${Math.floor(Math.random() * (1000 - 1) + 1)}`);
+    
+    const [showMsg, setShowMsg] = useState(false);  // Changed to false initially
+    const [msgConfig, setMsgConfig] = useState({ message: '', type: 'success' });
+    const handleConfirm = async () => {
+        const getTotal = await axios.post(`http://localhost:3001/totalprice`, {user_id: user_id});        
+        const purchase = await axios.post('http://localhost:3001/purchase', {
+            user_id: user_id,
+            total: getTotal.data.total,
+            invoice_num: random,
+          });
+          console.log(purchase.data);
+          if(purchase.status === 200){
+            const emptyCart = await axios.delete(`http://localhost:3001/removecartitems/${user_id}`);
+            setMsgConfig({ message: emptyCart.data, type: 'success' });
+            setShowMsg(true);
+          }
         router('/orders');
+        setIsClicked(!isClicked);
     };
 
     const formatDate = () => {
@@ -41,7 +58,7 @@ export default function OrderSum({ id, isClicked, setIsClicked, orderData }) {
                     </div>
                     <div className="mt-2 flex items-center text-emerald-600">
                         <Package className="w-4 h-4 mr-2" />
-                        <span>Order #ORD-{Math.random().toString(36).substr(2, 9).toUpperCase()}</span>
+                        <span>Order {random}</span>
                     </div>
                 </div>
 
@@ -54,8 +71,8 @@ export default function OrderSum({ id, isClicked, setIsClicked, orderData }) {
                                 <h3 className="font-semibold text-gray-800">Delivery Address</h3>
                             </div>
                             <div className="space-y-1 text-gray-600">
-                                <p className="font-medium text-gray-800">{orderData.CustomerName}</p>
-                                <p>{orderData.AddressLine1}</p>
+                                <p className="font-medium text-gray-800">{orderData.user.fullname}</p>
+                                <p>{orderData.user.Address.street_line1}</p>
                                 <p>{orderData.AddressLine2}</p>
                                 <p>{orderData.City}, {orderData.District}</p>
                                 <p>{orderData.PostalCode}</p>
@@ -117,6 +134,7 @@ export default function OrderSum({ id, isClicked, setIsClicked, orderData }) {
                     </div>
                 </div>
             </div>
+            {showMsg && <MsgBox message={msgConfig.message} type={msgConfig.type} onClose={() => setShowMsg(false)}/>}
         </div>
     );
 }

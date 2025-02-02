@@ -16,24 +16,29 @@ const defaulthome = () => {
   const[isConfirm, setIsConfirm] = useState(false);
   const[products, setProduts] = useState([]);
   const[auth, setAuth] = useState([]);
+  const [seachedItem, setSearchedItem] = useState('');
+  const [user, setUser] = useState([]);
   useEffect(() => {
 
     document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
 
     const fetchProduts = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/products');
+        const response = await axios.post('http://localhost:3001/searchproduct', {searchresult : seachedItem});
         setProduts(response.data);
         if(response.data){
           const getauth = await axios.get('http://localhost:3001/checkauth');
           setAuth(getauth.data.user);
+          const getuserdata = await axios.post('http://localhost:3001/userdata', {user_id: getauth.data.user.user_id});
+          setUser(getuserdata.data);
         }
+
       } catch (error) {
         console.error(error);
       }
     }
     fetchProduts();
-  }, []);
+  }, [seachedItem]);
   return (
     <main className="bg-gray-100 font-sans mt-5">
         <body className="bg-gray-200 font-mono leading-normal tracking-normal">
@@ -106,11 +111,14 @@ const defaulthome = () => {
                         type="text"
                         placeholder="Search for products..."
                         className="w-full px-4 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                        onChange={(e) => {
+                          setSearchedItem(e.target.value);
+                        }}
                       />
                       <button
                         className="px-4 py-2 bg-green-500 active:scale-95 text-white font-medium rounded-r-md shadow-md hover:bg-green-600 transition-all duration-300"
                         onClick={() => {
-                          console.log("Search initiated!");
+                          console.log('The item searched');
                         }}
                       >
                         Search
@@ -152,7 +160,7 @@ const defaulthome = () => {
                     </button>
                   </div>
                 </div>
-                {isConfirm && <OrderSum id={1} isClicked={isConfirm} setIsClicked={setIsConfirm} orderData={{}} />}
+                {isConfirm && <OrderSum user_id={auth.user_id} isClicked={isConfirm} setIsClicked={setIsConfirm} orderData={{user}} />}
         </body>
 
         <Footer />

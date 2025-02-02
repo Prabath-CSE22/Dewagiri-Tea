@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Upload, X } from 'lucide-react';
+import MsgBox from './ui/msgBox';
 import axios from 'axios';
 
 const AddProduct = () => {
@@ -12,7 +13,8 @@ const AddProduct = () => {
     stock: '',
     status: 'In Stock'
   });
-
+  const [showMsg, setShowMsg] = useState(false);  // Changed to false initially
+  const [msgConfig, setMsgConfig] = useState({ message: '', type: 'success' });
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -31,7 +33,8 @@ const AddProduct = () => {
         ...formData,
         image: imagePreview
       });
-      console.log(response.data);
+      setMsgConfig({ message: response.data, type: 'success' });
+      setShowMsg(true);
       setFormData({
         name: '',
         category: '',
@@ -196,6 +199,7 @@ const AddProduct = () => {
           </form>
         </div>
       </div>
+      {showMsg && <MsgBox message={msgConfig.message} type={msgConfig.type} onClose={() => setShowMsg(false)}/>}
     </div>
   );
 };

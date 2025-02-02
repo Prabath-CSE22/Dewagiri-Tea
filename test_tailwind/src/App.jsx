@@ -27,10 +27,10 @@ const App = () => {
             <Route path="/home" element={<User />} />
             <Route path="/profile" element={<UserProfile />} />
             <Route path="/orders" element={<UserOrders />} />
-          </Route>
             <Route path="/admin" element={<Admin />} />
             <Route path="/users" element={<AdminUsers />} />
             <Route path="/products" element={<AdminProducts />} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </div>

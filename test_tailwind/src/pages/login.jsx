@@ -1,17 +1,21 @@
 import React, {useState} from 'react'
 import {Link, useNavigate} from 'react-router-dom'
 import axios from 'axios'
-
+import MsgBox from '../component/ui/msgBox'
 
 const login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showMsg, setShowMsg] = useState(false);  // Changed to false initially
+  const [msgConfig, setMsgConfig] = useState({ message: '', type: 'success' });
   const navigate = useNavigate();
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
         if (email.length === 0 || password.length === 0) {
-            alert('Please fill all fields');
+            // alert('Please fill all fields');
+            setMsgConfig({ message: 'Please fill all fields', type: 'error' });
+            setShowMsg(true);
             return;
         }
 
@@ -30,28 +34,39 @@ const login = () => {
         
         if (response.data.message === 'Login successful') {
             console.log('Login successful:', response.data);
-            response.data.first_vist ? navigate('/profile') : navigate('/home');
+            response.data.role === 'admin' ? navigate('/admin') : response.data.first_vist ? navigate('/profile') : navigate('/home');
         } else {
-            alert('Login failed');
+            // alert('Login failed');
+            setMsgConfig({ message: 'Login failed', type: 'error' });
+            setShowMsg(true);            
         }
 
     } catch (error) {
         console.error('Login error:', error);
         if (error.response) {
-            // Server responded with error
             if (error.response.status === 404) {
-                alert('User not found');
-            } else if (error.response.status === 401) {
-                alert('Invalid email or password');
-            } else {
-                alert('Login failed: ' + error.response.data.message);
-            }
+                // alert('User not found');
+                setMsgConfig({ message: 'User not found', type: 'error' });
+                setShowMsg(true);
+              } else if (error.response.status === 401) {
+                // alert('Invalid email or password');
+                setMsgConfig({ message: 'Invalid email or password', type: 'error' });
+                setShowMsg(true);
+              } else {
+                // alert('Login failed: ' + error.response.data.message);
+                setMsgConfig({ message: 'Login failed: ' + error.response.data.message, type: 'error' });
+                setShowMsg(true);
+              }
         } else if (error.request) {
             // Request was made but no response
-            alert('No response from server. Please try again.');
+            // alert('No response from server. Please try again.');
+            setMsgConfig({ message: 'No response from server. Please try again.', type: 'error' });
+            setShowMsg(true);
         } else {
             // Something else went wrong
-            alert('Error: ' + error.message);
+            // alert('Error: ' + error.message);
+            setMsgConfig({ message: 'Error: ' + error.message, type: 'error' });
+            setShowMsg(true);
         }
     }
 }
@@ -105,6 +120,13 @@ const login = () => {
           </div>
         </div>
       </body>
+      {showMsg && (
+                <MsgBox 
+                    message={msgConfig.message}
+                    type={msgConfig.type}
+                    onClose={() => setShowMsg(false)}
+                />
+        )}
     </main>
   )
 }

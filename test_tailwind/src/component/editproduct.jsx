@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Upload, X } from 'lucide-react';
+import MsgBox from './ui/msgBox';
 import axios from 'axios';
 
 const EditProduct = ({product_id, isEditClicked, setIsEditClicked}) => {
@@ -14,6 +15,9 @@ const EditProduct = ({product_id, isEditClicked, setIsEditClicked}) => {
     status: '',
     image: ''
   });
+
+  const [showMsg, setShowMsg] = useState(false);  // Changed to false initially
+  const [msgConfig, setMsgConfig] = useState({ message: '', type: 'success' });
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -33,9 +37,12 @@ const EditProduct = ({product_id, isEditClicked, setIsEditClicked}) => {
       const response = await axios.post('http://localhost:3001/editproduct', {
         ...formData
       });
-      console.log(response.data);      
+      setMsgConfig({ message: response.data, type: 'success' });
+      setShowMsg(true);     
     } catch (error) {
       console.error(error);
+      setMsgConfig({ message: "Error updating product. Please try again.", type: 'error' });
+      setShowMsg(true);
     } 
   };
 

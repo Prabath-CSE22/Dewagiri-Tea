@@ -46,7 +46,7 @@ const ProtectedRoutes = () => {
     }
 
     if (isAdminRoute && role !== 'admin') {
-        return <Navigate to="/login" />;
+        return <Navigate to="/home" />;
     }
     
     if (!isAdminRoute && role === 'admin') {

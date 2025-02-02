@@ -6,6 +6,7 @@ import axios from "axios";
 
 const HomePage = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [subscribeEmail, setSubscribeEmail] = useState('');
   const navigate = useNavigate();
   const handleClick = () => {
     scrollToSection('shop');
@@ -254,7 +255,7 @@ const HomePage = () => {
                   <label className="block text-gray-700 mb-2">Message</label>
                   <textarea className="w-full p-2 border border-gray-300 rounded-lg h-32 focus:outline-none focus:border-emerald-500"></textarea>
                 </div>
-                <button type='submit' className="w-full bg-emerald-600 text-white px-6 py-2 rounded-lg hover:bg-emerald-700 transition duration-300">
+                <button type='submit' className="w-full bg-emerald-600 text-white px-6 py-2 rounded-lg hover:bg-emerald-700 transition duration-300 active:bg-emerald-800 active:transform active:scale-95">
                   Send Message
                 </button>
               </form>
@@ -270,11 +271,30 @@ const HomePage = () => {
           <p className="mb-8 max-w-2xl mx-auto">Subscribe to receive updates about new teas, brewing tips, and exclusive offers.</p>
           <div className="max-w-md mx-auto flex">
             <input
+              id="email"
               type="email"
               placeholder="Enter your email"
               className="flex-1 px-4 py-2 rounded-l-lg text-gray-900 focus:outline-none"
+              onChange={(e) => setSubscribeEmail(e.target.value)}
             />
-            <button className="bg-emerald-600 px-6 py-2 rounded-r-lg hover:bg-emerald-700 transition duration-300 text-emerald-50">
+            <button className="bg-emerald-600 px-6 py-2 rounded-r-lg hover:bg-emerald-700 transition duration-300 text-emerald-50 active:bg-emerald-800 active:transform active:scale-95"
+              onClick={async () => {
+                try{
+                  const subscribe = await axios.post("http://localhost:3001/subscribe", {
+                    email: subscribeEmail
+                  });
+                  if (subscribe.status === 200) {
+                    console.log("Subscribed successfully!");
+                    setSubscribeEmail('');
+                    document.getElementById('email').value = '';
+                  } else {
+                    console.log("Failed to subscribe. Please try again later.");
+                  }
+                }catch(err){
+                  console.log(err);
+                }
+              }}
+            >
               Subscribe
             </button>
           </div>

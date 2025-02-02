@@ -1,7 +1,10 @@
-import React from 'react';
+import React , {useState}from 'react';
+import MsgBox from './msgBox';
 import axios from 'axios';
 
-const CartItem = ({ id, product_name, quantity, total, image }) => {
+
+const CartItem = ({ product_id, product_name, quantity, total, image, showMsg, setShowMsg, msgConfig, setMsgConfig }) => {
+
   return (
     <div className="flex justify-between items-center bg-white border border-gray-200 rounded-lg p-5 mb-4 shadow-sm hover:shadow-md hover:-translate-y-0.5 transform transition-all duration-300">
       <div className="flex items-center gap-4">
@@ -25,9 +28,10 @@ const CartItem = ({ id, product_name, quantity, total, image }) => {
       <button
         className="flex items-center justify-center bg-red-100 text-red-600 border-none w-10 h-10 rounded-lg cursor-pointer hover:bg-red-200 hover:text-red-700 transform hover:scale-105 active:scale-95 transition-all duration-200 ml-4"
         aria-label="Remove item"
-        onClick={async () => {
-            const response = await axios.delete('http://localhost:3001/removecartitem', { product_id: id });
-            console.log(response.data);
+        onClick={async () => { 
+            const response = await axios.delete(`http://localhost:3001/removecartitem/${product_id}`);
+            setMsgConfig({ message: response.data, type: 'error' });
+            setShowMsg(true);
         }}>
         <i className="bx bx-trash text-xl"></i>
       </button>

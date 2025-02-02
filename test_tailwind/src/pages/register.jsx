@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import MsgBox from '../component/ui/msgBox'
 import axios from 'axios'
 
 const register = () => {
@@ -35,6 +36,9 @@ const register = () => {
     action: "No action taken"
   });
   
+  const [showMsg, setShowMsg] = useState(false);
+  const [msgConfig, setMsgConfig] = useState({ message: '', type: 'success' });
+
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -58,11 +62,13 @@ const register = () => {
       const response = await axios.post('http://localhost:3001/register', FullData);
       if(response.status === 200){
         navigate('/login');
-        console.log('Registration successful:', response.data);
+        setMsgConfig({ message: 'Registration successful', type: 'success' });
+        setShowMsg(true);
       }
     }
     catch(error){
-      console.error('Error in register:', error);
+      setMsgConfig({ message: 'Registration failed', type: 'error' });
+      setShowMsg(true);
     }
   }
 
@@ -161,6 +167,7 @@ const register = () => {
         </form>
         
       </body>
+      {showMsg && <MsgBox message={msgConfig.message} type={msgConfig.type} onClose={() => setShowMsg(false) }/>}
     </main>
   )
 }

@@ -48,6 +48,17 @@ const getCustomerCompTemplate = async () => {
     }
 }
 
+const sendmsgToSubscribers = async (subject, message) => {
+    try {
+        const subsPath = path.join(__dirname, 'templates', 'updates.html');
+        const subs = await fs.readFile(subsPath, 'utf8');
+        return subs;
+    } catch (error) {
+        console.error('Error in /sendmsgToSubscribers:', error);
+        res.status(500).json({ error: 'Internal server error' });  
+    }
+}
+
 async function getEmailTemplate() {
     try {
         const templatePath = path.join(__dirname, 'templates', 'emailTemplate.html');
@@ -59,6 +70,7 @@ async function getEmailTemplate() {
         throw error;
     }
 }
+
 const port = process.env.PORT || 5000;
 const transporter = nodemailer.createTransport({
     service: process.env.MY_SERVICE_PROVIDER,
@@ -70,7 +82,6 @@ const transporter = nodemailer.createTransport({
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_CONNECTION_STRING);
-
 
 // Define schema
 const Users = mongoose.model('users', new mongoose.Schema({
@@ -109,6 +120,7 @@ const Products = mongoose.model('products', new mongoose.Schema({
 }));
 
 const CartItems = mongoose.model('cartitems', new mongoose.Schema({
+    product_id: Number,
     user_id: Number,
     name: String,
     quantity: Number,
@@ -129,11 +141,68 @@ const PurchasedItems = mongoose.model('purchaseditems', new mongoose.Schema({
     status: String
 }));
 
+const Subscribers = mongoose.model('subscribers', new mongoose.Schema({
+    email: String,
+}));
+
+app.post('/userdata', async (req, res) => {
+    const { user_id } = req.body;
+    try {
+        const user = await Users.findOne({ user_id : user_id }, { fullname: 1, email: 1, phone_number: 1, Address: 1, _id: 0 });
+        if (!user) {
+            res.status(404).send('User not found');
+            return;
+        }
+        res.status(200).send(user);
+    } catch (error) {
+        console.error('Error in /userdata:', error);  
+    }
+});
+
+app.post('/subscribe', async (req, res) => {
+    const { email } = req.body;
+    try {
+        if (!email) {
+            res.status(400).send('Email is required');
+            return;
+        }
+        const subscriber = new Subscribers({ email });
+        await subscriber.save();
+        res.status(200).send('Subscribed successfully');
+    } catch (error) {
+        console.error('Error in /subscribe:', error);
+        res.status(500).send('Internal server error');
+    }
+});
 
 app.post('/editproduct', async (req, res) => {
     const { product_id, name, category, description, price, stock, status, image } = req.body;
     try {
         const product = await Products.updateOne({ product_id: product_id }, { $set: { name, category, description, price, stock, status, image } });
+        try {
+            const sendUpdates = await sendmsgToSubscribers();
+            const subscribers = await Subscribers.find({}, { email: 1, _id: 0 });
+            const subscriberEmails = subscribers.map(sub => sub.email).join(',');
+
+            const filledSendUpdates = sendUpdates
+                .replace('${Notice_header}', "Hey!!!😍, We've updated one of our products! 🌟")
+                .replace('${Product_Name}', name)
+                .replace('${Category}', category)
+                .replace('${Stock_Status}', status)
+                .replace('${Quantity}', stock)
+                .replace('${Current_Price}', price)
+                .replace('${Product_Description}', description);
+
+            const mailOptions = {
+                from: process.env.MY_EMAIL_ADDRESS,
+                to: subscriberEmails,
+                subject: "Product Update! 🔄 We've made some changes to one of our items!",
+                html: filledSendUpdates
+            };
+            await transporter.sendMail(mailOptions);
+        } catch (error) {
+            console.error('Error sending update emails:', error);
+        }
         res.status(200).send('Product updated successfully');
     } catch (error) {
         console.error('Error in /editproduct:', error);
@@ -244,7 +313,7 @@ app.get('/userStats', async (req, res) => {
 
 app.get('/users', async (req, res) => {
     try {
-        const users = await Users.find().lean().sort({ _id: 1 });
+        const users = await Users.find({role : "user"}).lean().sort({ _id: 1 });
         users.forEach(user => delete user.password);
         res.status(200).send(users);
     } catch (error) {
@@ -263,9 +332,19 @@ app.get('/allorders', async (req, res) => {
     }
 });
 
+app.get('/products', async (req, res) => {
+    try {
+        const products = await Products.find().lean().sort({ _id: 1 });
+        res.status(200).send(products);
+    } catch (error) {
+        console.error('Error in /products:', error);
+        res.status(500).send('Internal server error');
+    }
+});
+
 app.get('/count', async (req, res) => {
     try {
-        const count = await Users.countDocuments();
+        const count = await Users.countDocuments({role : 'user'});
         const countProducts = await Products.countDocuments();
         const countOrders = await PurchasedItems.countDocuments();
         const revenue = await PurchasedItems.aggregate([{ $group: { _id: null, total: { $sum: '$total_price' } } }]);
@@ -328,14 +407,29 @@ app.delete('/removecartitems/:user_id', async (req, res) => {
     }
 });
 
-app.delete('/removecartitem', async (req, res) => {
-    const { product_id } = req.body;
+app.delete('/removecartitem/:product_id', async (req, res) => {
+    const { product_id } = req.params;
     try {
-        const cartItem = await CartItems.deleteOne({ product_id : product_id});
+        const cartItem = await CartItems.findOne({ product_id: product_id });
         if (!cartItem) {
             res.status(404).send('Item not found');
             return;
         }
+
+        const product = await Products.findOne({ product_id: product_id });
+        if (!product) {
+            res.status(404).send('Product not found');
+            return;
+        }
+
+        await Promise.all([
+            CartItems.deleteOne({ product_id: product_id }),
+            Products.updateOne(
+                { product_id: product_id }, 
+                { $set: { stock: product.stock + cartItem.quantity }}
+            )
+        ]);
+
         res.status(200).send('Item removed from cart successfully');
     } catch (error) {
         console.error('Error in /removecartitem:', error);
@@ -350,6 +444,18 @@ app.post('/cart', async (req, res) => {
         res.status(200).send(cart);
     } catch (error) {
         console.error('Error in /cart:', error);
+        res.status(500).send('Internal server error');
+    }
+});
+
+app.post('/totalprice', async (req, res) => {
+    const { user_id } = req.body;
+    try {
+        const cart = await CartItems.find({ user_id }, { _id: 0 });
+        const total = cart.reduce((sum, item) => sum + item.price, 0);
+        res.status(200).send({ total });
+    } catch (error) {
+        console.error('Error in /totalprice:', error);
         res.status(500).send('Internal server error');
     }
 });
@@ -370,8 +476,8 @@ app.post('/updateproduct', async (req, res) => {
 
 app.post('/addtocart', async (req, res) => {
     try {
-        const { user_id, name, quantity, price, image } = req.body;
-        const cartItem = new CartItems({ user_id, name, quantity, price, image });
+        const { user_id, product_id, name, quantity, price, image } = req.body;
+        const cartItem = new CartItems({ user_id, product_id, name, quantity, price, image });
         await cartItem.save();
         res.status(200).send('Item added to cart successfully');
     } catch (error) {
@@ -380,14 +486,23 @@ app.post('/addtocart', async (req, res) => {
     }
 });
 
-app.get('/products', async (req, res)=>{
+app.post('/searchproduct', async (req, res) => {
+    const { searchresult } = req.body;
     try {
-        const products = await Products.find({}, {_id: 0});
+        let products;
+        if (!searchresult) {
+            products = await Products.find({}, { _id: 0 });
+        } else {
+            products = await Products.find(
+                { name: { $regex: searchresult, $options: 'i' } },
+                { _id: 0 }
+            );
+        }
         res.status(200).send(products);
     } catch (error) {
         res.status(500).send('Internal server error');
     }
-})
+});
 
 app.post('/addproduct', async (req, res) => {
     const product_id = new Date().getTime()%10000000;
@@ -395,6 +510,31 @@ app.post('/addproduct', async (req, res) => {
         const {name, category, description, price, stock, status, image } = req.body;
         const product = new Products({product_id, name, category, description, price, stock, status, image });
         await product.save();
+        try {
+            const sendUpdates = await sendmsgToSubscribers();
+            const subscribers = await Subscribers.find({}, { email: 1, _id: 0 });
+            const subscriberEmails = subscribers.map(sub => sub.email).join(',');
+
+            const filledSendUpdates = sendUpdates
+                .replace('${Notice_header}',  "Hey!!!😍, Check out our newest addition to the store! 🌟" )
+                .replace('${Product_Name}', name)
+                .replace('${Category}', category)
+                .replace('${Stock_Status}', status)
+                .replace('${Quantity}', stock)
+                .replace('${Current_Price}', price)
+                .replace('${Product_Description}', description);
+
+            const mailOptions = {
+                from: process.env.MY_EMAIL_ADDRESS,
+                to: subscriberEmails,
+                subject: "New Product Alert! 🎉 We've just added something special to our collection!",
+                html: filledSendUpdates
+            };
+            await transporter.sendMail(mailOptions);
+        } catch (error) {
+            console.error('Error sending update emails:', error);
+        }
+
         res.status(200).send('Product added successfully');
     } catch (error) {
         console.error('Error in /addproduct:', error);
@@ -512,11 +652,12 @@ app.post('/register', async (req, res) => {
     const month = new Date().getMonth()+1;
     const date = new Date().getDate();
     const user_id = `UID-${month}${Math.floor((numOne*year)/date)}-${date}${Math.round(numTwo*month/year)}`;
+    const countUsers = await Users.countDocuments();
     try {
         const {profile_pic, fullname, email, phone_number, Address, user_name, role, first_vist, active, status, delete_request, action } = req.body;
         const password = await bcrypt.hash(req.body.password, 10);
         console.log('Password:',password);
-        const user = new Users({user_id, profile_pic, fullname, email, phone_number, Address, user_name, password, role, first_vist, active, status, delete_request, action });
+        const user = new Users({user_id, profile_pic, fullname, email, phone_number, Address, user_name, password, role: countUsers < 1 ? 'admin' : role, first_vist, active, status, delete_request, action });
         await user.save();
         res.status(200).send('User registered successfully');
     } catch (error) {
@@ -546,21 +687,27 @@ app.post('/login', async (req, res) => {
         const changeStatus = await Users.updateOne({user_id : user.user_id}, {$set: {status : "active"}});
         console.log(changeStatus);
         
-        // Create token - remove sensitive info
-        // const userObject = user.toObject();
-        // delete userObject.password; // Remove password from token payload
         const token = jwt.sign({ user_id: user.user_id, role: user.role, email: user.email }, process.env.JWT_SECRET_KEY, { expiresIn: '10h' });
         console.log('Token generated successfully');
         
         // Set cookie with correct options
-        res.cookie('DewTeatoken', token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
-            maxAge: 3600000 // 1 hour
-        });
+        if(user.role === "user"){
+            res.cookie('DewTeatokenUser', token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'lax',
+                maxAge: 3600000 // 1 hour
+            });
+        }else{
+            res.cookie('DewTeatokenAdmin', token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'lax',
+                maxAge: 3600000 // 1 hour
+            });
+        }
 
-        return res.status(200).json({ message: 'Login successful' , first_vist: user.first_vist});
+        return res.status(200).json({ message: 'Login successful' , first_vist: user.first_vist, role: user.role });
         }
 
     } catch (error) {
@@ -570,7 +717,7 @@ app.post('/login', async (req, res) => {
 });
 
 app.get('/checkauth', (req, res) => {
-    const token = req.cookies.DewTeatoken;    
+    const token = req.cookies.DewTeatokenUser || req.cookies.DewTeatokenAdmin;    
     
     if (!token) {
         return res.status(401).json({ message: 'No token found' });
@@ -584,9 +731,19 @@ app.get('/checkauth', (req, res) => {
 });
 
 app.get('/logout', async (req, res) => {
-    const token = jwt.verify(req.cookies.DewTeatoken, process.env.JWT_SECRET_KEY);
-    await Users.updateOne({user_id: token.user_id}, {$set: {status: "offline"}});
-    res.clearCookie('DewTeatoken').send('Cookie cleared').status(200);
+    try {
+        if(req.cookies.DewTeatokenUser){
+            const token = jwt.verify(req.cookies.DewTeatokenUser, process.env.JWT_SECRET_KEY);
+            await Users.updateOne({user_id: token.user_id}, {$set: {status: "offline"}});
+            res.clearCookie('DewTeatokenUser').send('Cookie cleared').status(200);
+        }else{
+            const token = jwt.verify(req.cookies.DewTeatokenAdmin, process.env.JWT_SECRET_KEY);
+            await Users.updateOne({user_id: token.user_id}, {$set: {status: "offline"}});
+            res.clearCookie('DewTeatokenAdmin').send('Cookie cleared').status(200);
+        }       
+    } catch (error) {
+        console.error('Error in /logout:', error);
+    }
 });
 
 app.post('/sendcomplain', async (req, res) => {
@@ -594,6 +751,7 @@ app.post('/sendcomplain', async (req, res) => {
         const { email, name, message } = req.body;
         const subject = `Complaint from ${name}`;
 
+        
         // Get templates
         const customerTemplate = await getCustomerCompTemplate();
         const adminTemplate = await getadmincustTemplate();
