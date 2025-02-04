@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Update Notification</title>
+    <style>
+        body { margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; line-height: 1.6; background: #f4f4f4; }
+        .container { max-width: 650px; margin: 20px auto; background: #ffffff; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-radius: 8px; }
+        .header { 
+            background: linear-gradient(135deg, #1b5e20, #2e7d32);
+            color: white;
+            padding: 25px;
+            text-align: center;
+            border-radius: 8px 8px 0 0;
+        }
+        .header h2 { margin: 0; font-weight: 400; }
+        .content { padding: 30px; color: #424242; }
+        .product-details {
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 20px 0;
+            background: #ffffff;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+        }
+        .field-label {
+            font-weight: 600;
+            color: #37474f;
+            width: 130px;
+            display: inline-block;
+        }
+        .stock-status {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .in-stock { background: #e8f5e9; color: #1b5e20; }
+        .low-stock { background: #fff3e0; color: #e65100; }
+        .out-of-stock { background: #ffebee; color: #b71c1c; }
+        .price-change {
+            font-size: 13px;
+            color: #546e7a;
+            margin-top: 4px;
+            margin-left: 130px;
+        }
+        .footer { 
+            background: #f8f9fa; 
+            padding: 20px; 
+            text-align: center; 
+            font-size: 12px;
+            color: #757575;
+            border-radius: 0 0 8px 8px;
+            border-top: 1px solid #e0e0e0;
+        }
+        .view-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #2e7d32, #4caf50);
+            color: white;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 25px;
+            margin-top: 20px;
+            font-weight: 500;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .view-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(76,175,80,0.3);
+            }
+        .detail-row {
+            margin-top: 15px;
+            display: flex;
+            align-items: flex-start;
+        }
+        .detail-content {
+            flex: 1;
+            margin-left: 10px;
+        }
+        a { color: #2e7d32;  }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>${Notice_header}</h2>
+        </div>
+        <div class="content">
+            <p>The following product information has been updated in our inventory system:</p>
+            
+            <div class="product-details">
+                <div class="detail-row">
+                    <span class="field-label">Product Name:</span>
+                    <span class="detail-content">${Product_Name}</span>
+                </div>
+                
+                <div class="detail-row">
+                    <span class="field-label">Category:</span>
+                    <span class="detail-content">${Category}</span>
+                </div>
+                
+                <div class="detail-row">
+                    <span class="field-label">Stock Status:</span>
+                    <div class="detail-content">
+                        <span class="stock-status [stock-class]">${Stock_Status}</span>
+                        <div style="margin-top: 5px;">
+                            <small>${Quantity} units available</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="detail-row">
+                    <span class="field-label">Price:</span>
+                    <div class="detail-content">
+                        <span>$${Current_Price}</span>
+                        <div class="price-change">${Price_Change_Message}</div>
+                    </div>
+                </div>
+                
+                <div class="detail-row">
+                    <span class="field-label">Description:</span>
+                    <div class="detail-content">${Product_Description}</div>
+                </div>
+            </div>
+
+            <div style="text-align: center;">
+                <a href="[product-link]" class="view-button">View Product Details</a>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2025 DewTea. All rights reserved.</p>
+            <p>This is an automated notification from our inventory management system.</p>
+            <p><a href="[unsubscribe-link]">Unsubscribe from inventory updates</a></p>
+        </div>
+    </div>
+</body>
+</html></div>

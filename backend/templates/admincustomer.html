@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Complaint View</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+            background: linear-gradient(135deg, #eef7ec 0%, #d4edda 100%);
+            margin: 0;
+            padding: 20px;
+            color: #333333;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(44, 110, 73, 0.12);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #2c6e49;
+            font-size: 32px;
+            margin: 15px 0;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            background: #f3f9f2;
+            color: #2c6e49;
+            padding: 8px 16px;
+            border-radius: 20px;
+            display: inline-block;
+            font-size: 14px;
+            margin: 10px 0;
+        }
+
+        .complaint-card {
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            border-left: 6px solid #2c6e49;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .complaint-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .complaint-field {
+            margin: 15px 0;
+            text-align: left;
+        }
+
+        .field-label {
+            color: #2c6e49;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+
+        .field-value {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #333333;
+            background: #f3f9f2;
+            padding: 12px;
+            border-radius: 8px;
+            word-wrap: break-word;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 25px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: #2c6e49;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #f3f9f2;
+            color: #2c6e49;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .timestamp {
+            color: #666666;
+            font-size: 14px;
+            text-align: right;
+            margin-top: 15px;
+        }
+
+        .icon {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            vertical-align: middle;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="#2c6e49">
+                <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+            </svg>
+            <h1>Customer Complaint Details</h1>
+            <div class="status-badge">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="#2c6e49" style="margin-right: 4px; vertical-align: middle;">
+                    <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                Status: Under Review
+            </div>
+        </div>
+
+        <div class="complaint-card">
+            <div class="complaint-field">
+                <div class="field-label">Customer Name</div>
+                <div class="field-value">${customer_name}</div>
+            </div>
+
+            <div class="complaint-field">
+                <div class="field-label">Email Address</div>
+                <div class="field-value">${customer_email}</div>
+            </div>
+
+            <div class="complaint-field">
+                <div class="field-label">Complaint Message</div>
+                <div class="field-value">${customer_message}</div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-primary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="white" style="margin-right: 4px;">
+                        <path d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
+                    </svg>
+                    Respond to Customer
+                </button>
+                <button class="btn btn-secondary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#2c6e49" style="margin-right: 4px;">
+                        <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+                    </svg>
+                    Archive Complaint
+                </button>
+            </div>
+
+            <div class="timestamp">
+                Submitted on: ${submission_date}
+            </div>
+        </div>
+    </div>
+</body>
+</html>
