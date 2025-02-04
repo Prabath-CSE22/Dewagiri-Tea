@@ -47,7 +47,7 @@ const ProtectedRoutes = () => {
         return <Navigate to="/login" />;
     }
 
-    if(actionTaken !== 'Suspended' && actionTaken !== 'Removed'){
+    if(actionTaken !== 'Suspended' && actionTaken !== 'Removed' && actionTaken !== 'Deleted'){
         if (isAdminRoute && role !== 'admin') {
             return <Navigate to="/home" />;
         }
@@ -57,7 +57,11 @@ const ProtectedRoutes = () => {
         }
     }else if(actionTaken === 'Removed'){
         return <Navigate to="/removed" />;
-    }else{
+        
+    }else if(actionTaken === 'Deleted'){
+        return <Navigate to="/deleted" />;
+    }
+    else{
         return <Navigate to="/suspended" />;
     }
     return <Outlet />;

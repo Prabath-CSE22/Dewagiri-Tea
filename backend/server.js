@@ -160,6 +160,130 @@ const DeleteAccReqs = mongoose.model('deleteaccs', new mongoose.Schema({
     reason: String
 }));
 
+app.post('/mostpurchasedproduct', async (req, res) => {
+    try {
+        const { month } = req.body;
+        if (!month) {
+            return res.status(400).json({ error: 'Month parameter is required' });
+        }
+
+        const monthNumber = parseInt(month);
+
+        // Get purchased items for the specified month
+        const purchases = await PurchasedItems.aggregate([
+            // Split date string and convert month to number
+            {
+                $addFields: {
+                    monthNumber: { 
+                        $toInt: { $arrayElemAt: [{ $split: ["$date", "/"] }, 1] }
+                    }
+                }
+            },
+            // Match only the specified month
+            {
+                $match: {
+                    monthNumber: monthNumber
+                }
+            },
+            // Unwind products array to work with individual products
+            { $unwind: "$products" },
+            // Group by product name and sum quantities
+            {
+                $group: {
+                    _id: "$products.product_name",
+                    totalQuantity: { $sum: "$products.quantity" },
+                    totalAmount: { $sum: "$products.total_price" }
+                }
+            },
+            // Format the output
+            {
+                $project: {
+                    _id: 0,
+                    productName: "$_id",
+                    totalQuantity: 1,
+                    totalAmount: 1
+                }
+            },
+            // Sort by quantity in descending order
+            {
+                $sort: { totalQuantity: -1 }
+            }
+        ]);
+
+        res.status(200).json(purchases);
+    } catch (error) {
+        console.error('Error in /mostpurchasedproduct:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+app.post('/orderCountfordays', async(req, res) => {
+    const { month } = req.body;
+    try {
+        let orders;
+        if (month === 0) {
+            // Get data for all 12 months
+            let monthlyOrders = await PurchasedItems.aggregate([
+                {
+                    $addFields: {
+                        monthNumber: { $toInt: { $arrayElemAt: [{ $split: ["$date", "/"] }, 1] } }
+                    }
+                },
+                {
+                    $group: {
+                        _id: "$monthNumber",
+                        orderCount: { $sum: 1 }
+                    }
+                }
+            ]);
+
+            // Create a map of month to order count
+            let monthMap = new Map(monthlyOrders.map(item => [item._id, item.orderCount]));
+
+            // Generate array for all 12 months
+            orders = Array.from({ length: 12 }, (_, i) => ({
+                month: i + 1,
+                orderCount: monthMap.get(i + 1) || 0
+            }));
+
+        } else {
+            // Get data for specific month by days
+            let dailyOrders = await PurchasedItems.aggregate([
+                {
+                    $addFields: {
+                        dayNumber: { $toInt: { $arrayElemAt: [{ $split: ["$date", "/"] }, 0] } },
+                        monthNumber: { $toInt: { $arrayElemAt: [{ $split: ["$date", "/"] }, 1] } }
+                    }
+                },
+                {
+                    $match: {
+                        monthNumber: month
+                    }
+                },
+                {
+                    $group: {
+                        _id: "$dayNumber",
+                        orderCount: { $sum: 1 }
+                    }
+                }
+            ]);
+
+            // Create a map of day to order count
+            let dayMap = new Map(dailyOrders.map(item => [item._id, item.orderCount]));
+
+            // Generate array for all 31 days
+            orders = Array.from({ length: 31 }, (_, i) => ({
+                day: i + 1,
+                orderCount: dayMap.get(i + 1) || 0
+            }));
+        }
+        res.status(200).json(orders);
+    } catch (error) {
+        console.error('Error in /orderCountfordays:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+})
+
 app.get('/deleteaccs', async (req, res) => {
     try {
         const del = await DeleteAccReqs.find();
@@ -175,7 +299,7 @@ app.post('/deleteacc', async (req, res) => {
     try {
         const del = new DeleteAccReqs({ user_id, reason });
         if(del){
-            const user = await Users.deleteOne({ user_id: user_id });
+            const user = await Users.updateOne({ user_id: user_id }, {$set: {action: 'Deleted'}});
             if (!user) {
                 res.status(404).send('User not found');
                 return;

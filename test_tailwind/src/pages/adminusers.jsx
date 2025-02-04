@@ -192,8 +192,8 @@ const adminusers = () => {
                                 user.action === "Suspended"
                                         ? "bg-yellow-100 text-yellow-800 border-yellow-500"
                                         : user.action === "Removed"
-                                        ? "bg-red-100 text-red-800 border-red-500"
-                                        : "bg-gray-50 text-gray-700 border-gray-300"
+                                        ? "bg-blue-100 text-blue-800 border-blue-500"
+                                        : user.action ==="Deleted" ? "bg-red-100 text-red-800 border-red-500" : "bg-gray-100 text-gray-800 border-gray-300"
                                 }
                                 focus:ring-blue-500 focus:border-blue-500`}
                                 >
@@ -203,14 +203,27 @@ const adminusers = () => {
                                 </option>
                                 )}
                                 <option value="Suspended" className="bg-yellow-100 text-yellow-800">
-                                Suspend
+                                {user.action === "Suspended" ? "Suspended" : "Suspend"}
                                 </option>
                                 <option value="Removed" className="bg-red-100 text-red-800">
-                                Remove
+                                {user.action === "Removed" ? "Removed" : "Remove"}
                                 </option>
+                                {(user.action === "Deleted") && (
+                                        <option value="Deleted" className="bg-red-100 text-red-800">
+                                                Deleted
+                                        </option>        
+                                )
+                                }
+                                
                                 {(user.action === 'Suspended') && (
                                         <option value="No action taken" className='bg-green-100 text-green-800'>
-                                                Dismissed
+                                                Dissmis
+                                        </option>
+                                )}
+
+                                {(user.action === 'Deleted') && (
+                                        <option value="No action taken" className='bg-lime-100 text-lime-800'>
+                                                Recover
                                         </option>
                                 )}
                                 </select>
@@ -225,7 +238,7 @@ const adminusers = () => {
         </div>
 
         <div className="flex flex-col justify-center items-center mt-1 bg-white p-6 rounded-lg shadow-lg border border-gray-200 w-[99%] m-auto">
-        <h1 className="text-2xl font-bold mb-8 text-center">Deleted Users</h1>
+        <h1 className="text-2xl font-bold mb-8 text-center">Deleted User Messages</h1>
         <div className='overflow-x-auto w-full'>
                 <table className="w-full table-auto text-center items-center justify-center ">
                         <thead className="bg-gray-50">

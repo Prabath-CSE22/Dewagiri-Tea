@@ -13,6 +13,7 @@ import Home from './pages/home'
 import ProtectedRoutes from './component/ProtectedRoutes'
 import Suspended from './pages/suspended'
 import Removed from './pages/removed'
+import Deleted from './pages/deleted'
 import axios from 'axios'
 
 const App = () => {
@@ -27,6 +28,7 @@ const App = () => {
           <Route path="/register" element={<Register />} />
           <Route path="/suspended" element={<Suspended />} />
           <Route path="/removed" element={<Removed />} />
+          <Route path="/deleted" element={<Deleted />} />
           <Route element={<ProtectedRoutes />}>
             <Route path="/home" element={<User />} />
             <Route path="/profile" element={<UserProfile />} />

@@ -430,7 +430,7 @@ const userprofile = () => {
                                           disabled = {!isChecked || !reason}
                                           onClick={async () =>{
                                             try {
-                                              const respond = await axios.post('http://localhost:3001/deleteuser', {
+                                              const respond = await axios.post('http://localhost:3001/deleteacc', {
                                                 user_id, 
                                                 reason: reason
                                               });

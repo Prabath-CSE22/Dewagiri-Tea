@@ -11,20 +11,28 @@ const admin = () => {
     const [count, setCount] = useState(0);
     const [chartWidth, setChartWidth] = useState(window.innerWidth * 0.9);
     const [orders, setOrders] = useState([]);
+    const [ordersperday, setOrdersPerDay] = useState([]);
+    const [month, setMonth] = useState(0);
+    const [mostPopularProducts, setMostPopularProducts] = useState([]);
+    const [mostppmonth, setMostppMonth] = useState(new Date().getMonth() > 0 ? new Date().getMonth() : 12 );
     window.addEventListener('resize', () => {
         setChartWidth(window.innerWidth * 0.9);
     });
     const[clicked, setClicked] = useState(false)
     useEffect(() => {
-            document.getElementById('top').scrollIntoView({ behavior: 'smooth' });
+            // (month == 0 || mostppmonth == 1) && document.getElementById('top').scrollIntoView({ behavior: 'smooth' });
             const fetchData = async () => {
               const response = await axios.get('http://localhost:3001/count');
               setCount(response.data);
               const responseOrders = await axios.get('http://localhost:3001/allorders');
               setOrders(responseOrders.data);
+              const responseOrdersPerDay = await axios.post('http://localhost:3001/orderCountfordays', {month : month});
+              setOrdersPerDay(responseOrdersPerDay.data);
+              const responseMostPopularProducts = await axios.post('http://localhost:3001/mostpurchasedproduct', {month: mostppmonth});
+              setMostPopularProducts(responseMostPopularProducts.data);
             }
             fetchData();
-          }, []);
+          }, [month || mostppmonth]);
 return (
     <main className="bg-gray-100 font-serif mt-5">
             <body className=' w-full  mx-auto bg-gray-200 mt-5 '>
@@ -155,14 +163,38 @@ return (
                 <div className="flex flex-col justify-center items-center mt-1 bg-white p-6 rounded-lg shadow-lg border border-gray-200 w-[99%] m-auto">
                     <h1 className="text-2xl font-bold text-gray-800 mb-2">Monthly Sales Performance Overview</h1>
                     <p className="text-sm text-gray-500 mb-6">Track sales data over the past months to identify trends and patterns.</p>
-
+                    <div className='flex items-center gap-2 justify-start'>
+                      <select
+                        className="p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 "
+                        defaultValue="last12months"
+                        onChange={async (e) => {
+                          try {
+                            setMonth(Number(e.target.value));
+                          } catch (error) {
+                            console.error(error);
+                          }
+                        }}
+                        >
+                        <option value="0">Last 12 Months</option>
+                        <option value="1">January</option>
+                        <option value="2">February</option>
+                        <option value="3">March</option>
+                        <option value="4">April</option>
+                        <option value="5">May</option>
+                        <option value="6">June</option>
+                        <option value="7">July</option>
+                        <option value="8">August</option>
+                        <option value="9">September</option>
+                        <option value="10">October</option>
+                        <option value="11">November</option>
+                        <option value="12">December</option>
+                      </select>
+                    </div>
                     <LineChart
-                        xAxis={[{ data: [1, 2, 3, 5, 8, 10, 11] }]} // Example X-axis data (e.g., months)
-                        series={[
-                        {
-                            data: [2, 5.5, 1, 8.5, 1.5, 5, 11], // Example sales data
-                        },
-                        ]}
+                        xAxis={[{ data: ordersperday.map(order => month>0 ? order.day : order.month) }]}
+                        series={[{
+                            data: ordersperday.map(order => order.orderCount)
+                        }]}
                         width={chartWidth}
                         height={300}
                     />
@@ -173,18 +205,47 @@ return (
                     <h1 className="text-2xl font-bold text-gray-800 mb-2">Popular Products Comparison</h1>
                     <p className="text-sm text-gray-500 mb-6">Analyze the performance of different product groups over time.</p>
 
+                    <div className='flex items-center gap-2 justify-start'>
+                      <select
+                        className="p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 "
+                        defaultValue="last12months"
+                        value={mostppmonth}
+                        onChange={async (e) => {
+                          try {
+                            setMostppMonth(Number(e.target.value));
+                          } catch (error) {
+                            console.error(error);
+                          }
+                        }}
+                        >
+                        <option value="1">January</option>
+                        <option value="2">February</option>
+                        <option value="3">March</option>
+                        <option value="4">April</option>
+                        <option value="5">May</option>
+                        <option value="6">June</option>
+                        <option value="7">July</option>
+                        <option value="8">August</option>
+                        <option value="9">September</option>
+                        <option value="10">October</option>
+                        <option value="11">November</option>
+                        <option value="12">December</option>
+                      </select>
+                    </div>
+
                 
                     <BarChart
-                        xAxis={[{ scaleType: 'band', data: ['Group A', 'Group B', 'Group C', 'Group D'] }]} // Example X-axis labels
-                        series={[
-                        { data: [4, 3, 5, 10] }, // Example data for series 1
-                        { data: [1, 6, 3, 5] }, // Example data for series 2
-                        { data: [2, 9, 6, 2] }, // Example data for series 3
-                        { data: [1, 5, 7, 3] }
-                        ]}
+                        xAxis={[{ scaleType: 'band', label: "Product", data: mostPopularProducts.map(items => items.productName) }]} // Example X-axis labels
+                        series={[{
+                            label:"Quantity",
+                            data: mostPopularProducts.map(items => items.totalQuantity),
+                        }]
+                        }
                         width={chartWidth}
                         height={300}
                     />
+                    
+
                     </div>
                     
               
