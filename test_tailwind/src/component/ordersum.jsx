@@ -1,16 +1,13 @@
 import React, {useEffect, useState} from "react";
 import { useNavigate } from "react-router-dom";
-import { Check, MapPin, Truck, CreditCard, X, Package, Phone, Calendar } from "lucide-react";
+import { Check, MapPin, Truck, CreditCard, X, Package, Phone, Calendar, SquareUserRound, Mail } from "lucide-react";
 import MsgBox from "./ui/msgBox";
 import axios from "axios";
 
 export default function OrderSum({ user_id, isClicked, setIsClicked, orderData }) {
-    useEffect(() => {
-        console.log(orderData);
-    }, [orderData]);
 
     const router = useNavigate();
-      const [random, setRandom] = useState(`INV-${new Date().getFullYear()}-${Math.floor(Math.random() * (1000 - 1) + 1)}`);
+    const [random, setRandom] = useState(`INV-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 999) + 1).padStart(3, '0')}`);
     
     const [showMsg, setShowMsg] = useState(false);  // Changed to false initially
     const [msgConfig, setMsgConfig] = useState({ message: '', type: 'success' });
@@ -67,19 +64,32 @@ export default function OrderSum({ user_id, isClicked, setIsClicked, orderData }
                     <div className="grid md:grid-cols-2 gap-6">
                         <div className="bg-gray-50 p-4 rounded-xl">
                             <div className="flex items-center mb-3">
+                                <SquareUserRound className="w-5 h-5 text-emerald-600 mr-2" />
+                                <h3 className="font-semibold text-gray-800">Contact Information</h3>
+                            </div>
+                            <div className="space-y-1 text-gray-600 mb-3">
+                                <p className="font-medium text-gray-800">{orderData.user.fullname}</p>
+                                <div className="flex items-center mt-2 text-emerald-600">
+                                    <Mail className="w-4 h-4 mr-2"  />
+                                    <p>{orderData.user.email}</p>
+                                </div>
+                                <div className="flex items-center mt-2 text-emerald-600">
+                                    <Phone className="w-4 h-4 mr-2" />
+                                    <p>0{orderData.user.phone_number}</p>
+                                </div>
+                            </div>
+                    
+                            <div className="flex items-center mb-3">
                                 <MapPin className="w-5 h-5 text-emerald-600 mr-2" />
                                 <h3 className="font-semibold text-gray-800">Delivery Address</h3>
                             </div>
+                            
                             <div className="space-y-1 text-gray-600">
-                                <p className="font-medium text-gray-800">{orderData.user.fullname}</p>
-                                <p>{orderData.user.Address.street_line1}</p>
-                                <p>{orderData.AddressLine2}</p>
-                                <p>{orderData.City}, {orderData.District}</p>
-                                <p>{orderData.PostalCode}</p>
-                                <div className="flex items-center mt-2 text-emerald-600">
-                                    <Phone className="w-4 h-4 mr-2" />
-                                    <p>{orderData.PhoneNumber}</p>
-                                </div>
+                                <p className="font-medium text-gray-800">{orderData.user.fullname},</p>
+                                <p>{orderData.user.Address[0].street_line1}</p>
+                                <p>{orderData.user.Address[0].street_line2}, {orderData.user.Address[0].city},</p>
+                                <p> {orderData.user.Address[0].state}, {orderData.user.Address[0].country}.</p>
+                                <p>{orderData.user.Address[0].ZIP_Number}</p>
                             </div>
                         </div>
 
@@ -92,7 +102,7 @@ export default function OrderSum({ user_id, isClicked, setIsClicked, orderData }
                                 </div>
                                 <div className="flex items-center text-gray-600">
                                     <Check className="w-4 h-4 text-emerald-600 mr-2" />
-                                    <p>{orderData.Deliverymethod === 'door' ? 'Door Delivery' : 'Store Pick'}</p>
+                                    <p>Door Delivery</p>
                                 </div>
                                 <div className="mt-2 flex items-center text-emerald-600">
                                     <Calendar className="w-4 h-4 mr-2" />
@@ -108,7 +118,7 @@ export default function OrderSum({ user_id, isClicked, setIsClicked, orderData }
                                 </div>
                                 <div className="flex items-center text-gray-600">
                                     <Check className="w-4 h-4 text-emerald-600 mr-2" />
-                                    <p>{orderData.Paymentmethod === 'card' ? 'Card Payment' : 'Cash on Delivery'}</p>
+                                    <p>Cash on Delivery</p>
                                 </div>
                             </div>
                         </div>

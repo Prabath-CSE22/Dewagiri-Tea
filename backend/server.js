@@ -145,10 +145,108 @@ const Subscribers = mongoose.model('subscribers', new mongoose.Schema({
     email: String,
 }));
 
+const Whishlists = mongoose.model('whishlist', new mongoose.Schema({
+    user_id: String,
+    product_id: Number,
+    date: String,
+    name: String,
+    price: Number,
+    stock: Number,
+    availability: String
+}));
+
+const DeleteAccReqs = mongoose.model('deleteaccs', new mongoose.Schema({
+    user_id: String,
+    reason: String
+}));
+
+app.get('/deleteaccs', async (req, res) => {
+    try {
+        const del = await DeleteAccReqs.find();
+        res.status(200).send(del);
+    } catch (error) {
+        console.error('Error in /deleteaccs:', error);
+        res.status(500).send('Internal server error');
+    }
+});
+
+app.post('/deleteacc', async (req, res) => {
+    const { user_id, reason } = req.body;
+    try {
+        const del = new DeleteAccReqs({ user_id, reason });
+        if(del){
+            const user = await Users.deleteOne({ user_id: user_id });
+            if (!user) {
+                res.status(404).send('User not found');
+                return;
+            }
+        }
+        await del.save();
+
+        res.status(200).send('Request sent successfully');
+    } catch (error) {
+        console.error('Error in /deleteacc:', error);
+        res.status(500).send('Internal server error');
+    }
+});
+
+app.post('/getWhishlist', async (req, res) => {
+    const { user_id } = req.body;
+    try {
+        const whishlist = await Whishlists.find({ user_id }, { _id: 0 });
+        res.status(200).send(whishlist);
+    } catch (error) {
+        console.error('Error in /getWhishlist:', error);
+        res.status(500).send('Internal server error');
+    }
+});
+
+app.post('/checkwhishlist', async (req, res) => {
+    const { user_id, product_id } = req.body;
+    try {
+        const whishlist = await Whishlists.findOne({ user_id, product_id });
+        if (!whishlist) {
+            res.status(404).send('Product not found in whishlist');
+            return;
+        }
+        res.status(200).send('Product found in whishlist');
+    } catch (error) {
+        console.error('Error in /checkwhishlist:', error);
+        res.status(500).send('Internal server error');
+    }
+});
+
+app.post('/removefromwhishlist', async (req, res) => {
+    const { user_id, product_id } = req.body;
+    try {
+        const whishlist = await Whishlists.deleteOne({ user_id, product_id });
+        if (!whishlist) {
+            res.status(404).send('Product not found in whishlist');
+            return;
+        }
+        res.status(200).send('Product removed from whishlist successfully');
+    } catch (error) {
+        console.error('Error in /removefromwhishlist:', error);
+        res.status(500).send('Internal server error');
+    }
+});
+
+app.post('/addwhishlist', async (req, res) => {
+    const { user_id, product_id, name, price, stock, availability } = req.body;
+    try {
+        const whishlist = new Whishlists({ user_id, product_id, date: `${String(new Date().getDate()).padStart(2, '0')}/${String(new Date().getMonth()+1).padStart(2, '0')}/${new Date().getFullYear()}`, name, price, stock, availability });
+        await whishlist.save();
+        res.status(200).send('Product added to whishlist successfully');
+    } catch (error) {
+        console.error('Error in /addwhishlist:', error);
+        res.status(500).send('Internal server error');
+    }
+});
+
 app.post('/userdata', async (req, res) => {
     const { user_id } = req.body;
     try {
-        const user = await Users.findOne({ user_id : user_id }, { fullname: 1, email: 1, phone_number: 1, Address: 1, _id: 0 });
+        const user = await Users.findOne({ user_id : user_id }, {profile_pic:1, fullname: 1, email: 1, phone_number: 1, first_vist: 1, _id: 0 });
         if (!user) {
             res.status(404).send('User not found');
             return;
@@ -191,6 +289,7 @@ app.post('/editproduct', async (req, res) => {
                 .replace('${Stock_Status}', status)
                 .replace('${Quantity}', stock)
                 .replace('${Current_Price}', price)
+                .replace('${Price_Change_Message}', 'Check out the new price below! 😍')
                 .replace('${Product_Description}', description);
 
             const mailOptions = {
@@ -522,6 +621,7 @@ app.post('/addproduct', async (req, res) => {
                 .replace('${Stock_Status}', status)
                 .replace('${Quantity}', stock)
                 .replace('${Current_Price}', price)
+                .replace('${Price_Change_Message}', 'Check out the new price below! 😍')
                 .replace('${Product_Description}', description);
 
             const mailOptions = {
@@ -620,21 +720,6 @@ app.post('/updateuser', async (req, res) => {
     }
 });
 
-app.post('/userdata', async (req, res) => {
-    const { user_id } = req.body;
-    try {
-        const user = await Users.findOne({ user_id }, {profile_pic:1, fullname: 1, email: 1, phone_number: 1, first_vist: 1, _id: 0 });
-        if (!user) {
-            res.status(404).send('User not found');
-            return;
-        }
-        res.status(200).send(user);
-    } catch (error) {
-        console.error('Error in /userdata:', error);
-        res.status(500).send('Internal server error');
-    }
-});
-
 app.get('/emails', async (req, res) => {
     try {
         const users = await Users.find({}, { email: 1, _id: 0 });
@@ -687,7 +772,7 @@ app.post('/login', async (req, res) => {
         const changeStatus = await Users.updateOne({user_id : user.user_id}, {$set: {status : "active"}});
         console.log(changeStatus);
         
-        const token = jwt.sign({ user_id: user.user_id, role: user.role, email: user.email }, process.env.JWT_SECRET_KEY, { expiresIn: '10h' });
+        const token = jwt.sign({ user_id: user.user_id, role: user.role, email: user.email, action: user.action }, process.env.JWT_SECRET_KEY, { expiresIn: '10h' });
         console.log('Token generated successfully');
         
         // Set cookie with correct options

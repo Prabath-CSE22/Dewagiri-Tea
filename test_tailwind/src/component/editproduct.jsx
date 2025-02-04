@@ -37,7 +37,7 @@ const EditProduct = ({product_id, isEditClicked, setIsEditClicked}) => {
       const response = await axios.post('http://localhost:3001/editproduct', {
         ...formData
       });
-      setMsgConfig({ message: response.data, type: 'success' });
+      setMsgConfig({ message: "Product updated successfully!", type: 'success' });
       setShowMsg(true);     
     } catch (error) {
       console.error(error);
@@ -140,7 +140,6 @@ const EditProduct = ({product_id, isEditClicked, setIsEditClicked}) => {
                   rows="4"
                   value={formData.description}
                   onChange={(e) => setFormData({...formData, description: e.target.value})}
-                  required
                 ></textarea>
               </div>
 
@@ -212,6 +211,7 @@ const EditProduct = ({product_id, isEditClicked, setIsEditClicked}) => {
           </form>
         </div>
       </div>
+      {showMsg && <MsgBox message={msgConfig.message} type={msgConfig.type} onClose={() => setShowMsg(false)} />}
     </div>
   );
 };

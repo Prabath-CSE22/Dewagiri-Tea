@@ -17,6 +17,7 @@ const defaulthome = () => {
   const[products, setProduts] = useState([]);
   const[auth, setAuth] = useState([]);
   const [seachedItem, setSearchedItem] = useState('');
+  const [search, setSearch] = useState(false);
   const [user, setUser] = useState([]);
   useEffect(() => {
 
@@ -98,27 +99,27 @@ const defaulthome = () => {
 
                   }}
                 >
-                  <div className="flex flex-col items-center justify-center bg-green-200 py-6 rounded-md">
-                    <h1 className="text-2xl font-bold text-gray-800 flex items-center space-x-2">
+                  <div className="sm:flex sm:flex-col sm:items-center justify-center bg-green-200 py-6 rounded-md space-y-2 items-center flex-row">
+                    <h1 className="text-2xl font-bold text-gray-800 flex items-center space-x-2 sm:space-x-0 sm:space-y-0 sm:items-start">
                       <span>🔍</span> {/* Adding a magnifying glass emoji */}
                       <span>Search for Your Favorite Products</span>
                     </h1>
-                    <p className="text-gray-600 mt-3">
+                    <p className="text-gray-600 mt-3 ">
                       Type a product name below to explore our collection.
                     </p>
-                    <div className="mt-5 flex w-full max-w-lg">
+                    <div className="mt-5 flex w-full max-w-lg sm:px-4 sm:py-2 px-6 rounded-md">
                       <input
                         type="text"
                         placeholder="Search for products..."
-                        className="w-full px-4 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                        className="w-[90%] sm:px-4 sm:py-2 border px-6 border-gray-300 rounded-l-md focus:outline-none focus:ring-[0.5px] focus:ring-green-500"
                         onChange={(e) => {
                           setSearchedItem(e.target.value);
                         }}
-                      />
+                        />
                       <button
                         className="px-4 py-2 bg-green-500 active:scale-95 text-white font-medium rounded-r-md shadow-md hover:bg-green-600 transition-all duration-300"
                         onClick={() => {
-                          console.log('The item searched');
+                          setSearch(!search);
                         }}
                       >
                         Search
@@ -128,7 +129,7 @@ const defaulthome = () => {
                 </div>
   
             <div  className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg shadow-md w-[99%] m-auto mt-1">
-                {products.map((product) => (
+                {products.length > 0 ? products.map((product) => (
                   <Userprocard 
                     key={product.id}
                     product_id={product.product_id}
@@ -140,7 +141,18 @@ const defaulthome = () => {
                     image={product.image}
                     user_id={auth.user_id}
                   />
-                ))}
+                )) : (
+                <div className="col-span-full flex flex-col items-center justify-center p-8">
+                  <div className="sm:text-6xl mb-4 text-4xl">🔍</div>
+                  <h2 className="text-2xl font-bold text-gray-800 mb-2">No Items Found</h2>
+                  <p className="text-gray-600">
+                    We couldn't find any products matching your search criteria.
+                  </p>
+                  <p className="text-gray-500 mt-2">
+                    Try searching with different keywords or browse our categories.
+                  </p>
+                </div>
+                )}
                 </div>
                 <div className="bg-white p-6 rounded-lg shadow-lg text-center w-[99%] m-auto mt-1">
                   <div className="flex flex-col items-center justify-center bg-gray-200 py-6 rounded-md">

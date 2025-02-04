@@ -6,6 +6,7 @@ const ProtectedRoutes = () => {
     const [auth, setAuth] = useState(false);
     const [role, setRole] = useState('');
     const [loading, setLoading] = useState(true);
+    const [actionTaken, setActionTaken] = useState('');
     const location = useLocation();
 
     useEffect(() => {
@@ -16,6 +17,7 @@ const ProtectedRoutes = () => {
                 if (response.data.message != "No token found") {
                     setAuth(true);
                     setRole(response.data.user.role);
+                    setActionTaken(response.data.user.action);
                 }
             } catch (err) {
                 setAuth(false);
@@ -45,14 +47,19 @@ const ProtectedRoutes = () => {
         return <Navigate to="/login" />;
     }
 
-    if (isAdminRoute && role !== 'admin') {
-        return <Navigate to="/home" />;
+    if(actionTaken !== 'Suspended' && actionTaken !== 'Removed'){
+        if (isAdminRoute && role !== 'admin') {
+            return <Navigate to="/home" />;
+        }
+        
+        if (!isAdminRoute && role === 'admin') {
+            return <Navigate to="/admin" />;
+        }
+    }else if(actionTaken === 'Removed'){
+        return <Navigate to="/removed" />;
+    }else{
+        return <Navigate to="/suspended" />;
     }
-    
-    if (!isAdminRoute && role === 'admin') {
-        return <Navigate to="/admin" />;
-    }
-
     return <Outlet />;
 };
 

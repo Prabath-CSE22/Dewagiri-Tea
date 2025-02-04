@@ -23,7 +23,7 @@ const Cart = ({isConfirm, setIsConfirm }) => {
       }
     };
     fetchCartItems();
-  }, []);
+  }, [cart]);
 
   useEffect(() => {
     const newTotal = cart.reduce((sum, item) => sum + item.price, 0);
@@ -57,7 +57,7 @@ const Cart = ({isConfirm, setIsConfirm }) => {
       </div>
 
       <button
-        className="w-full py-2 mt-2 rounded-lg bg-green-500 text-lg font-bold transition-all hover:bg-green-600 text-white active:scale-95 disabled:bg-green-400 disabled:scale-100"
+        className="w-full py-2 mt-2 rounded-lg bg-green-500 text-lg font-bold transition-all hover:bg-green-600 text-white active:scale-95 disabled:opacity-50 disabled:active:scale-100"
         onClick={async () => {
           setIsConfirm(!isConfirm);
         }}

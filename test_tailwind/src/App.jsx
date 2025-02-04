@@ -11,6 +11,8 @@ import AdminProducts from './pages/adminproduct'
 import UserOrders from './pages/userorder'
 import Home from './pages/home'
 import ProtectedRoutes from './component/ProtectedRoutes'
+import Suspended from './pages/suspended'
+import Removed from './pages/removed'
 import axios from 'axios'
 
 const App = () => {
@@ -23,6 +25,8 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/forgot" element={<Forgotpassword />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/suspended" element={<Suspended />} />
+          <Route path="/removed" element={<Removed />} />
           <Route element={<ProtectedRoutes />}>
             <Route path="/home" element={<User />} />
             <Route path="/profile" element={<UserProfile />} />

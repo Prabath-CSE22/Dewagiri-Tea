@@ -11,6 +11,7 @@ const adminusers = () => {
   const [users, setUsers] = useState([]);
           const [userStatus, setUserStatus] = useState([]);
           const [lastOrder, setLastOrder] = useState([]);
+          const [deletedUsers, setDeletedUsers] = useState([]);
         useEffect(() => {
                 const fetchUsers = async () => {
                         const response = await axios.get('http://localhost:3001/users');
@@ -20,6 +21,8 @@ const adminusers = () => {
                                 setUserStatus(status.data);
                                 const lastOrder = await axios.get('http://localhost:3001/lastOrder');
                                 setLastOrder(lastOrder.data);
+                                const deleted = await axios.get('http://localhost:3001/deleteaccs');
+                                setDeletedUsers(deleted.data);
                         }        
                 };
                 fetchUsers();
@@ -130,7 +133,7 @@ const adminusers = () => {
                                                         {userStat.totalOrders}
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 ">
-                                                        ${userStat.totalSpent}
+                                                        ${(userStat.totalSpent).toFixed(2)}
                                                 </td>
                                                 </>) : (
                                                 <>
@@ -220,6 +223,39 @@ const adminusers = () => {
 
                 </div>
         </div>
+
+        <div className="flex flex-col justify-center items-center mt-1 bg-white p-6 rounded-lg shadow-lg border border-gray-200 w-[99%] m-auto">
+        <h1 className="text-2xl font-bold mb-8 text-center">Deleted Users</h1>
+        <div className='overflow-x-auto w-full'>
+                <table className="w-full table-auto text-center items-center justify-center ">
+                        <thead className="bg-gray-50">
+                                <tr>
+                                <th className="py-1 text-xs font-medium text-gray-500 uppercase">User ID</th>
+                                        <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase">Reason</th>
+                                </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-200 text-center">
+                                {deletedUsers.map((user) => (
+                                <tr key={user.id} className="hover:bg-gray-50 ">
+                                <td className="px-6 py-4 whitespace-nowrap text-center">
+                                <div className="flex items-center text-center justify-center">
+                                        <div className="font-medium text-center text-blue-500">{user.user_id}</div>
+                                </div>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-center">
+                                <div className="text-sm text-gray-900 text-center">
+                                        <div className="flex items-center gap-2 text-center justify-center text-red-500">
+                                        {user.reason}
+                                        </div>
+                                </div>
+                                </td>
+                                </tr>
+                                ))}
+                        </tbody>
+                </table>
+        </div>
+        </div>
+
       </body>
     </main>
   )

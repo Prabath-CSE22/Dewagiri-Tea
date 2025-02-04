@@ -13,9 +13,7 @@ const userprofile = () => {
     const getUserData = async () => {
       try {
           const getAuth = await axios.get('http://localhost:3001/checkauth');
-          if(getAuth.data.message === "Valid token"){
-            console.log(getAuth.data.message);
-            
+          if(getAuth.data.message === "Valid token"){            
             setUserId(getAuth.data.user.user_id);
             if(getAuth.data.user.user_id) {
               const responce = await axios.post('http://localhost:3001/getaddress', {user_id: getAuth.data.user.user_id});
@@ -117,7 +115,7 @@ const userprofile = () => {
                     
                     <ul className='flex flex-col md:flex-row gap-0 md:gap-2 md:mx-auto md:my-0 md:relative md:top-0 absolute top-10 md:-left-20 left-0 right-0'>
                             <li className='flex items-center gap-2 px-2 md:px-3 py-2 md:py-6'>
-                              <ShoppingBag  class='bx bx-home text-xs sm:text-xl lg:text-xl'/>
+                              <ShoppingBag class='bx bx-home text-xs sm:text-xl lg:text-xl'/>
                                     <Link to='/home' className='text-xs sm:text-xl lg:text-xl font-semibold text-gray-900'> Shop Now </Link>
                             </li>
                             <li className='flex items-center gap-2 px-2 md:px-3 py-2 md:py-6'>
@@ -422,7 +420,6 @@ const userprofile = () => {
                                           <input type="checkbox" name="" id="check" className='m-1' disabled={!reason}
                                            onChange={(e) => {
                                             setisChecked(e.target.checked);
-                                            console.log(e.target.checked);
                                           }}/>
                                           <label htmlFor='check' className="text-xs">I understand that this action is irreversible</label>
                                         </div>
@@ -431,6 +428,21 @@ const userprofile = () => {
                                         <button
                                           className="w-full active:scale-95 flex-1 bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-colors  disabled:opacity-50 disabled:active:scale-100"
                                           disabled = {!isChecked || !reason}
+                                          onClick={async () =>{
+                                            try {
+                                              const respond = await axios.post('http://localhost:3001/deleteuser', {
+                                                user_id, 
+                                                reason: reason
+                                              });
+                                              setMsgConfig({ message: respond.data, type: 'success' });
+                                              setShowMsg(true);
+                                              await axios.get('http://localhost:3001/logout');
+                                            } catch (error) {
+                                              
+                                              setMsgConfig({ message: error.response.data, type: 'error' });
+                                              setShowMsg(true);
+                                            }
+                                          }}
                                         >
                                                 Delete Account
                                         </button>
