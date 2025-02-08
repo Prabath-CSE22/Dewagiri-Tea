@@ -160,6 +160,17 @@ const DeleteAccReqs = mongoose.model('deleteaccs', new mongoose.Schema({
     reason: String
 }));
 
+app.post("/userDataforOrder", async (req, res) => {
+    const { user_id } = req.body;
+    try {
+        const user = await Users.findOne({ user_id: user_id }, { _id: 0, user_id: 1, fullname: 1, email: 1, Address: 1, phone_number: 1 });
+        res.status(200).send(user);
+    } catch (error) {
+        console.error('Error in /userDataforOrder:', error);
+        res.status(500).send('Internal server error');
+    }
+});
+
 app.post('/mostpurchasedproduct', async (req, res) => {
     try {
         const { month } = req.body;

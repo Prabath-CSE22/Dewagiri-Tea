@@ -30,7 +30,7 @@ const defaulthome = () => {
         if(response.data){
           const getauth = await axios.get('http://localhost:3001/checkauth');
           setAuth(getauth.data.user);
-          const getuserdata = await axios.post('http://localhost:3001/userdata', {user_id: getauth.data.user.user_id});
+          const getuserdata = await axios.post('http://localhost:3001/userDataforOrder', {user_id: getauth.data.user.user_id});
           setUser(getuserdata.data);
         }
 

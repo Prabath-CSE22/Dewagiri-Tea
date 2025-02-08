@@ -145,8 +145,8 @@ return (
                                 }}
                               >
                                 {order.status === "Pending" && <option value="Pending" className="bg-blue-200 text-blue-600">Pending</option>}
-                                {order.status === "Processing" && <option value="Processing" className="bg-yellow-200 text-yellow-600">Processing</option>}
-                                <option value="Delivered" className="bg-green-200 text-green-600">Delivered</option>
+                                {(order.status === "Processing" || order.status === "Pending") && <option value="Processing" className="bg-yellow-200 text-yellow-600">Processing</option>}
+                                {(order.status === "Processing" || order.status === "Delivered") && <option value="Delivered" className="bg-green-200 text-green-600">Delivered</option>}
                               </select>
                             </td>
                           )}
